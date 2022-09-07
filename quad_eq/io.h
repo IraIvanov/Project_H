@@ -5,11 +5,14 @@
 #define IN_OUT_PUT_H_INCLUDED
 
 enum EQ_RES{
-    NO_SOLUTION,
-    ONE_SOLUTION,
-    TWO_SOLUTIONS,
-    INF_SOLUTIONS
+    NO_SOLUTION = 0,
+    ONE_SOLUTION = 1,
+    TWO_SOLUTIONS = 2,
+    INF_SOLUTIONS = 3
 };
+
+//doxygen 
+//README.md + added IMG
 
 void input( double* a, double* b, double* c);
 void output( const double x1, const double x2, const enum EQ_RES res);

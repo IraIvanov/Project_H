@@ -4,17 +4,23 @@
 #include "io.h"
 #include <assert.h>
 
-const double EPS = 0.001;
+int double_eq_cmp( const double a, const double b) {
+
+    return fabs(a - b) < EPS;
+
+}
 
 double discriminant(const double a, const double b, const double c){
 
-    double D;
+    assert( isfinite(a) && isfinite(b) && isfinite(c) );
 
+    double D = 0;
+    
     D = b*b - 4*a*c;
 
     if ( D < 0){
 
-        return -1;
+        return D;
 
     } else {
 
@@ -26,23 +32,34 @@ double discriminant(const double a, const double b, const double c){
 
 EQ_RES linear(const double b, const double c, double* x1){
 
-    assert( x1 ); 
+    assert( x1 && isfinite(b) && isfinite(c) ); 
 
-    if ( fabs(b) < EPS && fabs(c) >= EPS) 
+    if ( double_eq_cmp(b, 0) && !double_eq_cmp(c, 0)) 
 
         return NO_SOLUTION;
 
     else {
 
-        if ( fabs(b) < EPS && fabs(c) < EPS) 
+        if ( double_eq_cmp(b, 0) && double_eq_cmp(c, 0) ) 
 
             return INF_SOLUTIONS;
 
         else{
 
-            *x1 = -c / b;
+            if (double_eq_cmp(c, 0)){
+                
+                *x1 = 0;
 
-            return ONE_SOLUTION; 
+                return ONE_SOLUTION;
+            }
+            
+            else {
+                
+                *x1 = -c / b;
+
+                return ONE_SOLUTION;
+
+            } 
 
         }
 
@@ -52,9 +69,9 @@ EQ_RES linear(const double b, const double c, double* x1){
 
 EQ_RES quad_solv(const double a, const double b, const double D, double* x1, double* x2) {
 
-    assert( !( !x1 || !x2) ); 
+    assert( !( !x1 || !x2) && isfinite(a) && isfinite(b) && isfinite(D)); 
 
-    if ( fabs(D + 1) < EPS){
+    if ( D < 0){
 
         *x1 = NAN;
 
@@ -64,7 +81,7 @@ EQ_RES quad_solv(const double a, const double b, const double D, double* x1, dou
 
     } else{ 
 
-        if ( fabs(D) < EPS ) {
+        if ( double_eq_cmp(D, 0) ) {
 
             *x1 = -b  / (2 * a);
 
@@ -89,19 +106,32 @@ EQ_RES quad_solv(const double a, const double b, const double D, double* x1, dou
 
 EQ_RES solv( const double a, const double b, const double c, double* x1,  double* x2){
     
-    assert( !( !x1 || !x2) ); 
+    assert( !( !x1 || !x2) && isfinite(a) && isfinite(b) && isfinite(c) ); 
 
-    if ( fabs(a) < EPS  ){ 
+    if ( double_eq_cmp(a, 0)  ){ 
 
         *x2 = NAN;
 
         return linear(b, c, x1);
 
     } else {
+        
+        if ( double_eq_cmp(c, 0) ){
+            *x1 = 0;
 
-        double D = discriminant(a, b, c);
+            *x2 = -b / a;
+            
+            return TWO_SOLUTIONS;
+        }
 
-        return quad_solv(a, b, D, x1, x2);
+        else{ 
+         
+            double D = discriminant(a, b, c);
+
+        
+            return quad_solv(a, b, D, x1, x2);
+        }
+
     }
 
 }

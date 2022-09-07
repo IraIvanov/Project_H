@@ -40,7 +40,7 @@ void output( const double x1, const double x2, const enum EQ_RES res){
         
         case INF_SOLUTIONS:
 
-            printf("%s", "Infinit amount of solutions\n");
+            printf("%s", "Infinite amount of solutions\n");
 
             break;
 
