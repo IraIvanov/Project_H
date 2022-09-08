@@ -12,6 +12,7 @@ The program is created for finding roots of quadratic equation.
   $ make    
   $ ./program     
   ```
+   After launching program from terminal using ./program you should input coeficents of equation using keyboard, then you get the solutions of that equathion.
 
 Multiple files :white_check_mark:    
 Documentation :white_check_mark:      
