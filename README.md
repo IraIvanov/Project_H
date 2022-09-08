@@ -2,7 +2,7 @@
 
 **That is the most briliant code for that type of problem that human been could ever seen**
 
-#How to build
+# How to build
 
 ```terminal
   $ git clone https://github.com/IraIvanov/Project_H    
