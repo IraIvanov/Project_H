@@ -2,11 +2,7 @@
 
 **That is the most briliant code for that type of problem that human been could ever seen**
 
-The program is created for finding roots of quadratic equation. 
-
-For installing program just clone directory quad_eq from Project_H repository and write make into terminal while being in the quad_eq directory.
-
-After launching program from terminal using ./program you should input coeficents of equation using keyboard, then you get the solutions of that equathion.
+#How to build
 
 ```terminal
   $ git clone https://github.com/IraIvanov/Project_H    
