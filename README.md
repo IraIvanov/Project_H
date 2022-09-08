@@ -8,6 +8,13 @@ For installing program just clone directory quad_eq from Project_H repository an
 
 After launching program from terminal using ./program you should input coeficents of equation using keyboard, then you get the solutions of that equathion.
 
+```terminal
+  $ git clone https://github.com/IraIvanov/Project_H    
+  $ cd Project_H    
+  $ make    
+  $ ./program     
+  ```
+
 Multiple files :white_check_mark:    
 Documentation :white_check_mark:      
 Warnings :negative_squared_cross_mark:      
