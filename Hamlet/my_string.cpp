@@ -30,7 +30,7 @@ char *my_strchr(const char* str, int ch) {
 
     for(int i = 0; str[i] != '\0'; i++){
 
-        if ( (int) str[i] == ch ) {
+        if (  *( (char *)str +i )  == (char)ch ) {
             
             return (char *)str + i;
         }
@@ -46,7 +46,7 @@ size_t my_strlen(const char* str) {
 
     size_t i = 0;
 
-    while ( str[i] != '\0') i++;
+    while ( *((char *)str + i )  != '\0') i++;
 
     return i;
 
@@ -54,19 +54,19 @@ size_t my_strlen(const char* str) {
 
 char *my_strcpy(char *str1, const char *str2) {
 
-    assert( str1 || str2 );
+    assert( str1 && str2 );
 
     int i = 0;
     
-    while( str2[i] != '\0' ){
+    while( *((char *)str2 + i )   != '\0' ){
         
-        str1[i] = str2[i];
+        *(str1 + i ) = *((char*)str2 + i ) ;
 
         i++;
 
     }
 
-    str1[i] = '\0';
+    *(str1 + i ) = '\0';
 
     return str1;
 
@@ -78,11 +78,15 @@ char *my_strncpy(char *str1, const char *str2, size_t count) {
 
     size_t str2_len = my_strlen( str2 );
 
+    printf("s2 size %lu, s2 %s \n", str2_len, str2);
+
+    printf("%d", str2_len < count);
+
     if ( str2_len < count) {
 
         for( size_t i = 0; i < str2_len; i++) {
             
-            str1[i] = str2[i];
+            str1[i] = *((char *)str2 + i ) ;
         
         }
 
@@ -93,9 +97,15 @@ char *my_strncpy(char *str1, const char *str2, size_t count) {
 
     } else {
 
-        for ( size_t i = 0; i <= count; i++){
+        for ( size_t i = 0; i < count; i++){
+            
+            printf(" s2 -> %s\n", str2);
+
+            printf("s1 -> %c , s2 -> %c , i = %lu,      \n", str1[i], str2[i], i);
 
             str1[i] = str2[i];
+
+            printf("s1 -> %c , s2 -> %c , i = %lu      \n", str1[i], *((char *)str2 + i ), i);
 
         }
 
@@ -112,9 +122,9 @@ char *my_strcat (char *str1, const char *str2) {
 
     size_t i;
 
-    for( i = 0; str2[i] != '\0'; i++) {
+    for( i = 0; *((char *)str2 + i ) != '\0'; i++) {
 
-        str1[ str1_len + i ] = str2[i];
+        str1[ str1_len + i ] = *((char *)str2 + i );
 
     }
 
@@ -131,9 +141,9 @@ char *my_strncat (char *str1, const char *str2, size_t n) {
 
     size_t i;
 
-    for( i = 0; i < n && str2[i] != '\0'; i++) {
+    for( i = 0; i < n && *((char *)str2 + i ) != '\0'; i++) {
 
-        str1[ str1_len + i ] = str2[i];
+        str1[ str1_len + i ] = *((char *)str2 + i );
 
     }  
 
@@ -171,7 +181,7 @@ char *my_strdup (const char *str) {
 
         for(size_t i = 0; i <= str_len ; i++){
 
-            temp[i] = str[i];
+            temp[i] = *((char *)str + i );
 
         }
 
