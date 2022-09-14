@@ -16,7 +16,7 @@
 
 int my_strcmp(void *s1ptr,void *s2ptr) {
     
-    assert( s1 && s2 );
+    assert( s1ptr && s2ptr );
 
     char * s1 = *(char **)s1ptr;
 
@@ -49,13 +49,20 @@ int int_cpy(void *a_ptr, void *b_ptr, int left, int right) {
     
 }
 
-int str_cpy(void *s1ptr, void * str2ptr, int left, int right) {
+int str_cpy(void *s1ptr, void * s2ptr, int left, int right) {
 
-    char *s1 = *(char **)s1ptr + left;
+    //char *s1 = calloc(128, sizeof(char));
+    //s1 = *((char **)s1ptr + left);
     
-    char *s2 = *(char **)s2ptr + right;
+    //har s2 = calloc(128, sizeof(char));
+    
+    //s2 = *((char **)s2ptr + right);
 
-    s1 = strdup(s2);
+    printf("why are we still here\n");
+
+    //printf("%s, %s\n", s1, s2);
+
+    *((char **)s1ptr + left) = strdup(*((char **)s2ptr + right));
 
     return 1;
 
@@ -79,6 +86,8 @@ int (*comp)(void * lv, void * rv), int (*cpy)( void * array1, void * array2, int
         
         merge_sort( array, el_size, mid + 1, right, (*comp), (*cpy));
     
+    printf("merging\n");
+
     merge(array, el_size, left, right, mid, (*comp) , (*cpy));
 
     }

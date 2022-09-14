@@ -1,22 +1,26 @@
 #include"my_sort.h"
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 int main(){
 
-    int a[10];
+    char *hamlet[10];
 
-    for(int i = 0; i < 10 ; i++) {
+    for ( int i = 0; i < 10; i++){
 
-        scanf("%d", a + i);
-
+        char s1[128];
+        scanf("%s", s1);
+        hamlet[i] = strdup(s1);
     }
 
-    merge_sort( (void *)a, sizeof(int), 0, 9, int_cmp, int_cpy );
+    printf("Sorting...\n");
 
-    for(int i = 0; i < 10 ; i++) {
+    merge_sort((void *)hamlet, sizeof(char *), 0, 9, my_strcmp, str_cpy);
 
-        printf("%d ", a[i]);
+     for ( int i = 0; i < 10; i++){
+
+        printf("%s\n", hamlet[i]);
 
     }
 

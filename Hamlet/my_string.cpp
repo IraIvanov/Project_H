@@ -78,9 +78,9 @@ char *my_strncpy(char *str1, const char *str2, size_t count) {
 
     size_t str2_len = my_strlen( str2 );
 
-    printf("s2 size %lu, s2 %s \n", str2_len, str2);
+    //printf("s2 size %lu, s2 %s \n", str2_len, str2);
 
-    printf("%d", str2_len < count);
+    //printf("%d", str2_len < count);
 
     if ( str2_len < count) {
 
@@ -99,13 +99,13 @@ char *my_strncpy(char *str1, const char *str2, size_t count) {
 
         for ( size_t i = 0; i < count; i++){
             
-            printf(" s2 -> %s\n", str2);
+            //printf(" s2 -> %s\n", str2);
 
-            printf("s1 -> %c , s2 -> %c , i = %lu,      \n", str1[i], str2[i], i);
+            //printf("s1 -> %c , s2 -> %c , i = %lu,      \n", str1[i], str2[i], i);
 
             str1[i] = str2[i];
 
-            printf("s1 -> %c , s2 -> %c , i = %lu      \n", str1[i], *((char *)str2 + i ), i);
+            //printf("s1 -> %c , s2 -> %c , i = %lu      \n", str1[i], *((char *)str2 + i ), i);
 
         }
 
@@ -176,14 +176,18 @@ char *my_strdup (const char *str) {
     
     size_t str_len = my_strlen(str);
     
-    char *temp = (char*)malloc( sizeof(char) * str_len );
+    char temp[str_len] = "";
+
+    //char *temp = (char*)malloc( sizeof(char) * str_len );
     if ( temp ) {
 
-        for(size_t i = 0; i <= str_len ; i++){
+        /*for(size_t i = 0; i <= str_len ; i++){
 
             temp[i] = *((char *)str + i );
 
-        }
+        }*/
+
+        return my_strcpy(temp, str);
 
     }
 
