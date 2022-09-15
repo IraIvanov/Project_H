@@ -6,6 +6,18 @@
 #ifndef MY_SORT_H_INCLUDED
 #define MY_SORT_H_INCLUDED
 
+typedef struct _String_Size_Pair {
+
+char * str;
+
+size_t str_len;
+
+} S_S_Pair;
+
+int my_comp(void *s1ptr, void *s2ptr);
+
+int my_cpy ( void *struc1_ptr, void *struc2_ptr, int left, int right);
+
 int int_cmp(void *aptr, void *bptr);
 
 int int_cpy(void *a_ptr, void *b_ptr, int left, int right);

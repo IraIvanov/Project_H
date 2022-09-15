@@ -3,6 +3,7 @@
 #include<string.h>
 #include<assert.h>
 #include"my_sort.h"
+#include<ctype.h>
 
 
 /*int num_cmp(char *s1, char* s2){
@@ -20,11 +21,85 @@ int my_strcmp(void *s1ptr,void *s2ptr) {
 
     char * s1 = *(char **)s1ptr;
 
+
     char * s2 = *(char **)s2ptr;
 
+    //printf("comparing [%s] and [%s]\n, their length are [%lu] and [%lu]\n", s1, s2, strlen(s1), strlen(s2));
 
-    return strcmp( s1, s2);
+    int i_s1 = 0, j_s2 = 0;
 
+    while( i_s1 < strlen(s1) && j_s2 < strlen(s2) ) {
+        
+        while( !isalpha( s1[i_s1] ) ) i_s1 ++;
+        while( !isalpha( s2[j_s2] ) ) j_s2 ++;
+        if ( s1[i_s1] != s2[j_s2] ) return s1[i_s1] - s2[j_s2];
+        i_s1++;
+        j_s2++;
+    
+    }
+
+    return s1[i_s1] - s2[j_s2];
+
+}
+
+int my_comp(void *s1ptr, void *s2ptr) {
+
+    assert( s1ptr && s2ptr);
+
+    //printf("compairing\n");
+
+    char * s1 = ((S_S_Pair *)s1ptr) -> str;
+
+    char * s2 = ((S_S_Pair *)s2ptr) -> str;
+
+    //printf("s1 is [%s] and s2 is [%s], their length are : %lu and %lu \n", s1, s2, strlen(s1), strlen(s2));
+
+    int i_s1 = 0, j_s2 = 0;
+
+    //printf("skipping punctuation marks\n");
+
+    while( i_s1 < strlen(s1) && j_s2 < strlen(s2) ) {
+        
+        //printf("why are we still here?\n");
+
+        while( !isalpha( s1[i_s1] ) && i_s1 < strlen(s1) ) i_s1 ++;
+
+        while( !isalpha( s2[j_s2] ) && j_s2 < strlen(s2)) j_s2 ++;
+        
+        if ( s1[i_s1] != s2[j_s2] ) {
+
+            //printf("returning result\n");
+
+            return s1[i_s1] - s2[j_s2];
+        
+        }
+
+        i_s1++;
+        
+        j_s2++;
+    
+    }
+
+    //printf("returning result\n");
+
+    return s1[i_s1] - s2[j_s2];
+
+}
+
+int my_cpy ( void *struc1_ptr, void *struc2_ptr, int left, int right) {
+
+
+    S_S_Pair *struc1 = (S_S_Pair *)struc1_ptr + left;
+
+    S_S_Pair *struc2 = (S_S_Pair *)struc2_ptr + right;
+
+    //printf("Copying...\n");
+
+    struc1 -> str = strdup(struc2 -> str);
+
+    struc1 -> str_len = struc2 -> str_len;
+
+    return 1;
 }
 
 int int_cmp(void *aptr, void *bptr) {
@@ -58,7 +133,7 @@ int str_cpy(void *s1ptr, void * s2ptr, int left, int right) {
     
     //s2 = *((char **)s2ptr + right);
 
-    printf("why are we still here\n");
+    //printf("why are we still here\n"); it was debug
 
     //printf("%s, %s\n", s1, s2);
 
@@ -86,7 +161,7 @@ int (*comp)(void * lv, void * rv), int (*cpy)( void * array1, void * array2, int
         
         merge_sort( array, el_size, mid + 1, right, (*comp), (*cpy));
     
-    printf("merging\n");
+    //printf("merging\n"); it was debug
 
     merge(array, el_size, left, right, mid, (*comp) , (*cpy));
 
