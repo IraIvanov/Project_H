@@ -17,6 +17,8 @@ size_t str_len;
 
 void free_text(S_S_Pair* text);
 
+void my_free(S_S_Pair* array, size_t size);
+
 int my_strcmp(const void *s1ptr, const void *s2ptr);
 
 int my_comp(const void *s1ptr, const void *s2ptr);

@@ -11,6 +11,14 @@ void free_text(S_S_Pair* text){
     free(text);
 }
 
+void my_free(S_S_Pair* array, size_t size){
+
+    for(size_t i = 0; i < size; i++){
+        free((array + i)->str);
+        free(array + i);
+    }
+    return;
+}
 
 int my_strcmp(const void *s1ptr, const void *s2ptr) {
     
@@ -287,8 +295,8 @@ void merge(void * array, size_t el_size, size_t left, size_t right, size_t mid, 
         
     }
 
-    free(left_arr);
+    my_free((S_S_Pair*)left_arr, num1);//free(left_arr);
 
-    free(right_arr); 
+    my_free((S_S_Pair*)right_arr, num2);//free(right_arr); 
 
 }
