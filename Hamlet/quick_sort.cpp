@@ -5,30 +5,148 @@
 #include"my_sort.hpp"
 
 
-/*int num_cmp(char *s1, char* s2){
-    int v1, v2;
-    v1 = atoi( s1 );
-    v2 = atoi( s2 );
-
-}*/
-
+void free_text(S_S_Pair* text){
+    free(text->str);
+    text->str_len = 0;
+    free(text);
+}
 
 
-/*int my_strcmp(void *s1,void *s2) {
-    assert( s1 && s2 );
-    int i;
+int my_strcmp(const void *s1ptr, const void *s2ptr) {
+    
+    assert( s1ptr && s2ptr );
 
-    for( i = 0; (char )s1[i] == (char )s2[i]; i++){
+    char * s1 = *(char **)s1ptr;
+
+
+    char * s2 = *(char **)s2ptr;
+
+    //printf("comparing [%s] and [%s]\n, their length are [%lu] and [%lu]\n", s1, s2, strlen(s1), strlen(s2));
+
+    size_t i_s1 = 0, j_s2 = 0;
+
+    while( i_s1 < strlen(s1) && j_s2 < strlen(s2) ) {
         
-        if ( ( char )s1[i] == '\0') return 0;
-
+        while( !isalpha( s1[i_s1] ) ) i_s1 ++;
+        while( !isalpha( s2[j_s2] ) ) j_s2 ++;
+        if ( s1[i_s1] != s2[j_s2] ) return s1[i_s1] - s2[j_s2];
+        i_s1++;
+        j_s2++;
+    
     }
 
-    return (char)s1[i] - (char)s2[i];
+    return s1[i_s1] - s2[j_s2];
 
-}*/
+}
 
-int int_cmp(void *aptr, void *bptr) {
+int my_comp(const void *s1ptr, const void *s2ptr) {
+
+    assert( s1ptr && s2ptr);
+
+    //printf("compairing\n");
+
+    char * s1 = ((S_S_Pair *)s1ptr) -> str;
+
+    char * s2 = ((S_S_Pair *)s2ptr) -> str;
+
+    //printf("s1 is [%s] and s2 is [%s], their length are : %lu and %lu \n", s1, s2, strlen(s1), strlen(s2));
+
+    size_t i_s1 = 0, j_s2 = 0;
+
+    //printf("skipping punctuation marks\n");
+
+    while( i_s1 < strlen(s1) && j_s2 < strlen(s2) ) {
+        
+        //printf("why are we still here?\n");
+
+        while( !isalpha( s1[i_s1] ) && i_s1 < strlen(s1) ) i_s1 ++;
+
+        while( !isalpha( s2[j_s2] ) && j_s2 < strlen(s2)) j_s2 ++;
+        
+        if ( s1[i_s1] != s2[j_s2] ) {
+
+            //printf("returning result\n");
+
+            return s1[i_s1] - s2[j_s2];
+        
+        }
+
+        i_s1++;
+        
+        j_s2++;
+    
+    }
+
+    //printf("returning result\n");
+
+    return s1[i_s1] - s2[j_s2];
+
+}
+
+int my_comp_revers(const void *s1ptr, const void *s2ptr) {
+
+    assert( s1ptr && s2ptr);
+
+    //printf("compairing\n");
+
+    char * s1 = ((S_S_Pair *)s1ptr) -> str;
+
+    char * s2 = ((S_S_Pair *)s2ptr) -> str;
+
+    //printf("s1 is [%s] and s2 is [%s], their length are : %lu and %lu \n", s1, s2, strlen(s1), strlen(s2));
+
+    size_t i_s1 = strlen(s1) - 1, j_s2 = strlen(s2)- 1;
+
+    //printf("skipping punctuation marks\n");
+
+    while( i_s1 > 0 && j_s2 > 0 ) {
+        
+        //printf("why are we still here?\n");
+
+        while( !isalpha( s1[i_s1] ) && i_s1 > 0 ) i_s1 --;
+
+        while( !isalpha( s2[j_s2] ) && j_s2 > 0) j_s2 --;
+        
+        if ( s1[i_s1] != s2[j_s2] ) {
+
+            //printf("returning result\n");
+
+            return s1[i_s1] - s2[j_s2];
+        
+        }
+
+        i_s1--;
+        
+        j_s2--;
+    
+    }
+
+    //printf("returning result\n");
+
+    return s1[i_s1] - s2[j_s2];
+
+}
+
+int my_cpy ( void *struc1_ptr,const void *struc2_ptr, size_t left, size_t right) {
+
+    assert(struc1_ptr && struc2_ptr);
+
+    S_S_Pair *struc1 = (S_S_Pair *)struc1_ptr + left;
+
+    S_S_Pair *struc2 = (S_S_Pair *)struc2_ptr + right;
+
+    //printf("Copying...\n");
+
+    struc1 -> str = strdup(struc2 -> str);
+
+    struc1 -> str_len = struc2 -> str_len;
+
+    return 1;
+}
+
+int int_cmp(const void *aptr, const void *bptr) {
+
+    assert(aptr && bptr);
 
     int *a = (int *)aptr;
 
@@ -38,7 +156,9 @@ int int_cmp(void *aptr, void *bptr) {
 
 }
 
-int int_cpy(void *a_ptr, void *b_ptr, int left, int right) {
+int int_cpy(void *a_ptr,const void *b_ptr, size_t left, size_t right) {
+
+    assert( a_ptr && b_ptr);
 
     int *a = (int *)a_ptr;
 
@@ -50,19 +170,39 @@ int int_cpy(void *a_ptr, void *b_ptr, int left, int right) {
     
 }
 
+int str_cpy(void *s1ptr,const void * s2ptr, size_t left, size_t right) {
 
-
-void merge( void * array, size_t el_size, int left, int right, int mid, int (*comp)(void * lv, void * rv),
-
- int (*cpy)(void * array1, void * array2, int left_index, int right_index));
-
-void merge_sort( void * array, size_t el_size, int left, int right, 
-
-int (*comp)(void * lv, void * rv), int (*cpy)( void * array1, void * array2, int left_index, int right_index)) {
-
-    if ( right > left ){
+    assert( s1ptr && s2ptr);
+    //char *s1 = calloc(128, sizeof(char));
+    //s1 = *((char **)s1ptr + left);
     
-        int mid = (left+right) / 2;
+    //har s2 = calloc(128, sizeof(char));
+    
+    //s2 = *((char **)s2ptr + right);
+
+    //printf("why are we still here\n"); it was debug
+
+    //printf("%s, %s\n", s1, s2);
+
+    *((char **)s1ptr + left) = strdup(*((char **)s2ptr + right));
+
+    return 1;
+
+}
+
+
+
+void merge();
+
+void merge_sort(void * array, size_t el_size, size_t left, size_t right, 
+
+int (*comp)(const void * lv, const void * rv), int (*cpy)( void * array1,const void * array2, size_t left_index, size_t right_index)) {
+
+    assert(array);
+
+    if ( right > left){
+        
+        size_t mid = (left + right) / 2;
 
         merge_sort( array, el_size, left, mid, (*comp), (*cpy));
         
@@ -74,15 +214,17 @@ int (*comp)(void * lv, void * rv), int (*cpy)( void * array1, void * array2, int
 
 }
 
-void merge( void * array, size_t el_size, int left, int right, int mid, int (*comp)(void * lv, void * rv),
+void merge(void * array, size_t el_size, size_t left, size_t right, size_t mid, int (*comp)(const void * lv,const void * rv),
 
- int (*cpy)(void* array1, void* array2, int left_index, int right_index)) {
+ int (*cpy)(void* array1,const void* array2, size_t left_index, size_t right_index)) {
 
-    int num1 = mid - left + 1;
+     assert( (mid - left + 1) && (right - mid));
 
-    int num2 = right - mid;
+    size_t num1 = mid - left + 1;
 
-    int i = 0, j = 0, k = left;
+    size_t num2 = right - mid;
+
+    size_t i = 0, j = 0, k = left;
 
     //void *left_arr[num1], *right_arr[num2];
 
@@ -107,7 +249,7 @@ void merge( void * array, size_t el_size, int left, int right, int mid, int (*co
 
     while ( i < num1 && j < num2 ) {
 
-       if ( comp ( right_arr + j * el_size, left_arr + i * el_size) >= 0) {
+       if ( comp ( (S_S_Pair *)right_arr + j * el_size, (S_S_Pair*)left_arr + i * el_size) >= 0) {
 
            cpy( array, left_arr, k, i);
 

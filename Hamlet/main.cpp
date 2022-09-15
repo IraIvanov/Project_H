@@ -1,44 +1,102 @@
-#include"my_string.hpp"
 #include"my_sort.hpp"
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
+#include<sys/stat.h>
+
+#define SIZE_TEXT 1024
+
 
 int main(){
 
-    char  s2[128] = "Hello World!";
-    char *s1 = (char *)calloc(128, sizeof(char));
-    char *s4 = (char *)calloc(128, sizeof(char));
-    char *s3;
 
-    my_puts(s2);
-    //s4 = my_strchr( s2, 'o');
-    //printf(" s4 len %lu and s2 len %lu\n", my_strlen(s2), my_strlen(s4));
+    char *buff;
 
-    //my_puts(s4);
+    S_S_Pair *text;
 
-    my_puts(s2);
+    FILE* stream, *output;
 
-    //printf(" %c\n", s2[4]);
-        //s1 n copy to s2 %s
-    printf(" s2 copy to s1 %s\n", my_strcpy(s1, s2));
+    stream = fopen("hamlet.txt", "r");
+
+    output = fopen("result.txt", "w");
+
+    struct stat size_buff;
+
+    fstat ( fileno (stream), &size_buff);
+
+    size_t file_size = (size_t) size_buff.st_size;
+
+    printf("allocating buff\n");
+
+    buff = (char *)calloc(file_size + 1, sizeof(char));
+
+    printf("allocating text\n");
     
-    char s5[128] = "CHAOS AD";
+    text = (S_S_Pair *) calloc(SIZE_TEXT, sizeof(S_S_Pair));
 
-    my_strncpy(s1, s5, 5*sizeof(char));
+    fread(buff, sizeof(char) , file_size, stream);
 
-    my_puts(s1);
+    fclose(stream);
 
-    my_puts(s2);
+    //printf("buff is %s\n", buff);
 
-    printf(" s1 cat to s2 %s\n", my_strcat(s1, s2));
+    buff[file_size] = '\n';
 
-    my_strncat(s1, s2, 5);
+    //printf("buff is %s\n", buff);
 
-    my_puts(s1);
+    size_t str_plc = 0, j = 0, real_num = 2;
+
+    for(size_t i = 0; i <= file_size; i++) {
+
+        if ( buff[i] == '\n') {
+
+            if ( j == ( SIZE_TEXT * (real_num - 1) ) ){
+
+                printf("Realoccating text\n");
+
+                text = (S_S_Pair*)realloc(text, SIZE_TEXT*sizeof(S_S_Pair) * real_num ); // realloc if text has no place to put new string
+
+                real_num++;
+
+            }
+
+            text[j].str = (char*)calloc(i - str_plc + 2, sizeof(char));
+
+            strncpy(text[j].str, buff + str_plc, i - str_plc + 1);
+
+            text[j].str[i - str_plc + 1] = '\0';
+
+            text[j].str_len = i - str_plc + 2;
+            
+            j++;
+
+            str_plc = i + 1;
+        }
+
+    }
+
+
+    printf("Sorting...\n");
+
+    merge_sort((void *) text, sizeof(S_S_Pair), 0, j - 1, my_comp, my_cpy);
+
+    qsort(text, j - 1, sizeof(S_S_Pair), my_comp_revers);
+
+    for(size_t i = 0; i < j; i ++) {
+
+        fprintf(output ,"%s", text[i].str);
+    }
     
-    s3 = strdup(s2);
-    free(s1);
-    free(s4);
-    printf(" s2 dup to s3 %s", s3);
+    fprintf(output, "\nOriginal text: %s \n", buff); //---> last symbol is D
+
+    free(buff);
+
+    for(size_t i = 0; i < j; i ++) {
+
+        free_text(text + i);
+    }
+
+    fclose(output);
+
     return 0;
 }

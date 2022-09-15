@@ -176,9 +176,9 @@ char *my_strdup (const char *str) {
     
     size_t str_len = my_strlen(str);
     
-    char temp[str_len] = "";
+    //char temp[str_len] = "";
 
-    //char *temp = (char*)malloc( sizeof(char) * str_len );
+    char *temp = (char*)malloc( sizeof(char) * str_len );
     if ( temp ) {
 
         /*for(size_t i = 0; i <= str_len ; i++){
