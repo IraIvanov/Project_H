@@ -4,49 +4,6 @@
 #include<assert.h>
 #include"my_sort.hpp"
 
-
-void free_text(S_S_Pair* text){
-    free(text->str);
-    text->str_len = 0;
-    free(text);
-}
-
-void my_free(S_S_Pair* array, size_t size){
-
-    for(size_t i = 0; i < size; i++){
-        free((array + i)->str);
-        free(array + i);
-    }
-    return;
-}
-
-int my_strcmp(const void *s1ptr, const void *s2ptr) {
-    
-    assert( s1ptr && s2ptr );
-
-    char * s1 = *(char **)s1ptr;
-
-
-    char * s2 = *(char **)s2ptr;
-
-    //printf("comparing [%s] and [%s]\n, their length are [%lu] and [%lu]\n", s1, s2, strlen(s1), strlen(s2));
-
-    size_t i_s1 = 0, j_s2 = 0;
-
-    while( i_s1 < strlen(s1) && j_s2 < strlen(s2) ) {
-        
-        while( !isalpha( s1[i_s1] ) ) i_s1 ++;
-        while( !isalpha( s2[j_s2] ) ) j_s2 ++;
-        if ( s1[i_s1] != s2[j_s2] ) return s1[i_s1] - s2[j_s2];
-        i_s1++;
-        j_s2++;
-    
-    }
-
-    return s1[i_s1] - s2[j_s2];
-
-}
-
 int my_comp(const void *s1ptr, const void *s2ptr) {
 
     assert( s1ptr && s2ptr);
@@ -54,6 +11,20 @@ int my_comp(const void *s1ptr, const void *s2ptr) {
     //printf("compairing\n");
 
     char * s1 = ((S_S_Pair *)s1ptr) -> str;
+
+    //printf("s1 is [%s]\n", s1);
+
+//    char * s2 = ((S_S_Pair *)s2ptr) -> str;
+    
+//    printf("s2 is [%s]\n", s2);
+
+    size_t s1_len = ((S_S_Pair *)s1ptr) -> str_len - 1;
+
+    //printf("s1_len is [%lu]\n", s1_len);
+
+    size_t s2_len = ((S_S_Pair *)s2ptr) -> str_len - 1;
+
+    //printf("s2_len is [%lu]\n", s2_len);
 
     char * s2 = ((S_S_Pair *)s2ptr) -> str;
 
@@ -63,16 +34,21 @@ int my_comp(const void *s1ptr, const void *s2ptr) {
 
     //printf("skipping punctuation marks\n");
 
-    while( i_s1 < strlen(s1) && j_s2 < strlen(s2) ) {
+    //printf("s1_len [%lu] and s2_len[%lu] and ptrs are i [%lu], j [%lu]\n", s1_len, s2_len, i_s1, j_s2);
+
+    while( i_s1 < (s1_len ) && j_s2 < (s2_len )) {
         
         //printf("why are we still here?\n");
 
-        while( !isalpha( s1[i_s1] ) && i_s1 < strlen(s1) ) i_s1 ++;
+        //printf(" i is %lu j is %lu\n", i_s1, j_s2);
 
-        while( !isalpha( s2[j_s2] ) && j_s2 < strlen(s2)) j_s2 ++;
+        while( !isalpha( *(s1 + i_s1) ) && i_s1 < (s1_len - 1) ) i_s1 ++;
+
+        while( !isalpha( *(s2 + j_s2) ) && j_s2 < (s2_len - 1)) j_s2 ++;
         
         if ( s1[i_s1] != s2[j_s2] ) {
 
+            //printf("s1 is [%s] and s2 is [%s], their length are : %lu and %lu \n", s1, s2, strlen(s1), strlen(s2));
             //printf("returning result\n");
 
             return s1[i_s1] - s2[j_s2];
@@ -82,12 +58,18 @@ int my_comp(const void *s1ptr, const void *s2ptr) {
         i_s1++;
         
         j_s2++;
+
+        //printf(" i is %lu j is %lu\n", i_s1, j_s2);
     
     }
+    //printf(" i is %lu j is %lu\n", i_s1, j_s2);
+    //printf("returning result with s1[%s| and s2[%s]\n", s1, s2);
 
-    //printf("returning result\n");
+    //printf("returning result with s1[%lu| -> %c and s2[%lu] -> %c\n", i_s1, *(s1 + i_s1), j_s2, *(s2 + j_s2));
 
-    return s1[i_s1] - s2[j_s2];
+    //printf("returning %d\n", s1[i_s1]- s2[j_s2]);
+
+    return (s1[i_s1] - s2[j_s2]);
 
 }
 
@@ -101,9 +83,13 @@ int my_comp_revers(const void *s1ptr, const void *s2ptr) {
 
     char * s2 = ((S_S_Pair *)s2ptr) -> str;
 
+    size_t s1_len = ((S_S_Pair *)s1ptr) -> str_len - 1;
+
+    size_t s2_len = ((S_S_Pair *)s2ptr) -> str_len - 1;
+
     //printf("s1 is [%s] and s2 is [%s], their length are : %lu and %lu \n", s1, s2, strlen(s1), strlen(s2));
 
-    size_t i_s1 = strlen(s1) - 1, j_s2 = strlen(s2)- 1;
+    size_t i_s1 = s1_len - 1, j_s2 = s2_len- 1;
 
     //printf("skipping punctuation marks\n");
 
@@ -111,9 +97,11 @@ int my_comp_revers(const void *s1ptr, const void *s2ptr) {
         
         //printf("why are we still here?\n");
 
-        while( !isalpha( s1[i_s1] ) && i_s1 > 0 ) i_s1 --;
+        //printf("i [%lu], j [%lu]\n",i_s1, j_s2);
 
-        while( !isalpha( s2[j_s2] ) && j_s2 > 0) j_s2 --;
+        while( !isalpha( s1[i_s1] ) && i_s1 > 1 ) i_s1 --;
+
+        while( !isalpha( s2[j_s2] ) && j_s2 > 1) j_s2 --;
         
         if ( s1[i_s1] != s2[j_s2] ) {
 
@@ -145,57 +133,21 @@ int my_cpy ( void *struc1_ptr,const void *struc2_ptr, size_t left, size_t right)
 
     //printf("Copying...\n");
 
+    //printf("string orig [%s]\n", struc2->str);
+
+    //printf("string orig len [%lu]\n", struc2->str_len);
+
+    if(struc1 -> str) free(struc1->str);
+
     struc1 -> str = strdup(struc2 -> str);
+
+    //printf("string copied [%s]\n", struc1->str);
 
     struc1 -> str_len = struc2 -> str_len;
 
-    return 1;
-}
-
-int int_cmp(const void *aptr, const void *bptr) {
-
-    assert(aptr && bptr);
-
-    int *a = (int *)aptr;
-
-    int *b = (int *)bptr;
-
-    return *a - *b;
-
-}
-
-int int_cpy(void *a_ptr,const void *b_ptr, size_t left, size_t right) {
-
-    assert( a_ptr && b_ptr);
-
-    int *a = (int *)a_ptr;
-
-    int *b = (int *)b_ptr;
-
-    *(a + left) = *(b + right);
-
-    return 1; 
-    
-}
-
-int str_cpy(void *s1ptr,const void * s2ptr, size_t left, size_t right) {
-
-    assert( s1ptr && s2ptr);
-    //char *s1 = calloc(128, sizeof(char));
-    //s1 = *((char **)s1ptr + left);
-    
-    //har s2 = calloc(128, sizeof(char));
-    
-    //s2 = *((char **)s2ptr + right);
-
-    //printf("why are we still here\n"); it was debug
-
-    //printf("%s, %s\n", s1, s2);
-
-    *((char **)s1ptr + left) = strdup(*((char **)s2ptr + right));
+    //printf("string copied len [%lu]\n", struc1->str_len);
 
     return 1;
-
 }
 
 
@@ -255,9 +207,13 @@ void merge(void * array, size_t el_size, size_t left, size_t right, size_t mid, 
 
     j = 0;
 
+    //printf("why are we still here ?\n");
+
     while ( i < num1 && j < num2 ) {
 
-       if ( comp ( (S_S_Pair *)right_arr + j * el_size, (S_S_Pair*)left_arr + i * el_size) >= 0) {
+        //printf("just to suffer\n" );
+
+       if ( comp ( (S_S_Pair *) /*(int *)*/right_arr + j, (S_S_Pair*)/*(int *)*/left_arr + i) >= 0) {
 
            cpy( array, left_arr, k, i);
 
@@ -294,9 +250,19 @@ void merge(void * array, size_t el_size, size_t left, size_t right, size_t mid, 
         k++;
         
     }
+    
+    for(size_t num = 0; num < num1; num ++ ){
+        free(((S_S_Pair*)left_arr + num) -> str);
+    }
 
-    my_free((S_S_Pair*)left_arr, num1);//free(left_arr);
+    for(size_t num = 0; num < num2; num ++ ){
+        free(((S_S_Pair*)right_arr + num)->str);
+    }
 
-    my_free((S_S_Pair*)right_arr, num2);//free(right_arr); 
+    //my_free((S_S_Pair*)left_arr, num1);
+    free(left_arr);
+
+    //my_free((S_S_Pair*)right_arr, num2);
+    free(right_arr); 
 
 }
