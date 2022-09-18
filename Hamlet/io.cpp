@@ -55,6 +55,65 @@ void input(size_t file_size, char *buff, size_t size_sgstd, S_S_Pair** text, siz
 
 }
 
+void new_input(size_t file_size, char *buff,/* size_t size_sgstd,*/ S_S_Pair** text, size_t *text_size){
+
+    assert(text);
+
+    assert(buff);
+
+    assert(text_size);
+
+    //size_t real_num = 2, str_plc = 0;
+
+    for(size_t i = 0; i <= file_size; i++){
+        if ( buff[i] == '\n' ) (*text_size)++;
+    }
+
+    buff[file_size - 1] = '\n';
+
+    buff[file_size] = '\0';
+
+    *text = (S_S_Pair *)calloc(*text_size, sizeof(S_S_Pair));
+
+    size_t j = 0, str_plc = 0;
+
+    for(size_t i = 0; i <= file_size && j < (*text_size) ; i++) {
+
+        if ( buff[i] == '\n') {
+
+            /*if ( (*text_size) == ( size_sgstd * (real_num - 1) ) ){
+
+                printf("Realoccating text\n");
+
+                *text = (S_S_Pair*)realloc(*text, size_sgstd*sizeof(S_S_Pair) * real_num ); // realloc if text has no place to put new string
+
+                real_num++;
+
+            }*/
+
+            (*text)[j].str = (char*)calloc(i - str_plc + 2, sizeof(char));
+
+            
+
+            strncpy((*text)[j].str, buff + str_plc, i - str_plc + 1);
+
+            //fprintf(output, "%s", text[j].str);
+
+            (*text)[j].str[i - str_plc + 1] = '\0';
+
+            (*text)[j].str_len = i - str_plc + 2;
+            
+            /*(*text_size)++;*/
+
+            j++;
+
+            str_plc = i + 1;
+        }
+
+    }
+
+}
+
 void my_output(FILE *output, S_S_Pair* text, size_t text_size) {
 
     assert( output );

@@ -4,62 +4,70 @@
 #include<string.h>
 #include<sys/stat.h>
 #include"io.hpp"
+#include<time.h>
+#include<sys/times.h>
 
 #define SIZE_TEXT 1024
 
 
-int main(){
+int main( int argc, char *argv[]){
 
+    if (argc < 2) printf("File name wasn't inputed\n");
 
-    char *buff;
+    else {
+        char *buff = nullptr;
 
-    S_S_Pair *text;
+        S_S_Pair *text = nullptr;
 
-    FILE* stream, *output;
+        FILE* stream = fopen(argv[1], "r"), *output = fopen("result.txt", "w");
 
-    stream = fopen("hamlet.txt", "r");
+        struct stat size_buff = { };
 
-    output = fopen("result.txt", "w");
+        if ( !fstat ( fileno (stream), &size_buff) ) {
 
-    struct stat size_buff = { };
+            size_t file_size = (size_t) size_buff.st_size + 1;
 
-    fstat ( fileno (stream), &size_buff);
+            //printf("allocating buff\n");
 
-    size_t file_size = (size_t) size_buff.st_size + 1;
+            buff = (char *)calloc(file_size + 1, sizeof(char));
 
-    //printf("allocating buff\n");
+            //printf("allocating text\n");
+            
+            //text = (S_S_Pair *) calloc(SIZE_TEXT, sizeof(S_S_Pair));
 
-    buff = (char *)calloc(file_size + 1, sizeof(char));
+            if ( (size_t)size_buff.st_size == fread(buff, sizeof(char) , file_size, stream) ) {
 
-    //printf("allocating text\n");
-    
-    text = (S_S_Pair *) calloc(SIZE_TEXT, sizeof(S_S_Pair));
+                size_t j = 0;
 
-    fread(buff, sizeof(char) , file_size, stream);
+                //input(file_size, buff, SIZE_TEXT, &text, &j);
 
-    size_t j = 0;
+                new_input(file_size, buff, &text, &j);
 
-    input(file_size, buff, SIZE_TEXT, &text, &j);
+                printf("Sorting...\n");
 
-    printf("Sorting...\n");
+                merge_sort((void *) text, sizeof(S_S_Pair), 0, j - 1, my_comp, my_cpy);
 
-    merge_sort((void *) text, sizeof(S_S_Pair), 0, j - 1, my_comp, my_cpy);
+                my_output( output, text, j);
 
-    my_output( output, text, j);
+                qsort(text, j - 1, sizeof(S_S_Pair), my_comp_revers);
 
-    qsort(text, j - 1, sizeof(S_S_Pair), my_comp_revers);
+                free_output(output, text, j);
+                
+                fprintf(output, "\nOriginal text: %s \n", buff); //---> last symbol is D
 
-    free_output(output, text, j);
-    
-    fprintf(output, "\nOriginal text: %s \n", buff); //---> last symbol is D
+                free(buff);
 
-    free(buff);
+                free(text);
 
-    free(text);
+                fclose(stream);
 
-    fclose(stream);
+                fclose(output);
 
-    fclose(output);
+            } else printf("ERROR WHILE READIGN FILE\n");
+
+        } else printf("ERROR WHILE READIGN FILE\n");
+
+    }
 
     return 0;
 }

@@ -9,6 +9,8 @@
 
 void input(size_t file_size, char *buff, size_t size_sgstd, S_S_Pair** text, size_t *text_size);
 
+void new_input(size_t file_size, char *buff,/* size_t size_sgstd,*/ S_S_Pair** text, size_t *text_size);
+
 void my_output(FILE *output, S_S_Pair* text, size_t text_size);
 
 void free_output(FILE *output, S_S_Pair* text, size_t text_size);
