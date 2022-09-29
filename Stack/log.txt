@@ -1,156 +1,10 @@
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 1;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	[1] = 0 (POISON)
- 	[2] = 0 (POISON)
- 	[3] = 0 (POISON)
- 	[4] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 2;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	[2] = 0 (POISON)
- 	[3] = 0 (POISON)
- 	[4] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 3;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	[3] = 0 (POISON)
- 	[4] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 4;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	[4] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 5;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 6;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	[6] = 0 (POISON)
- 	[7] = 0 (POISON)
- 	[8] = 0 (POISON)
- 	[9] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 7;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	[7] = 0 (POISON)
- 	[8] = 0 (POISON)
- 	[9] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 8;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	[8] = 0 (POISON)
- 	[9] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
-{
- 	size = 9;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	*[8] = 8
- 	[9] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe29125060](ok) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 10;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -163,32 +17,13 @@ stk1[0x7ffe29125060](ok) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
-{
- 	size = 10;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	*[8] = 8
- 	*[9] = 9
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 9;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -201,13 +36,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 9;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -220,13 +55,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 8;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -239,13 +74,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 8;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -258,13 +93,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 7;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -277,13 +112,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 7;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -296,13 +131,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 6;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -315,13 +150,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 6;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -334,13 +169,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 5;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -353,13 +188,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 5;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -372,13 +207,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 4;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -391,13 +226,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 4;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	*[3] = 3
@@ -410,13 +245,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 3;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	[3] = 219540062 (POISON)
@@ -429,13 +264,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 3;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	*[2] = 2
  	[3] = 219540062 (POISON)
@@ -448,13 +283,13 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_resize_down at stack.cpp(182):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_resize_down at stack.cpp(211):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 2;
  	cap = 10;
  	data [0x604000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  	[2] = 219540062 (POISON)
  	[3] = 219540062 (POISON)
@@ -467,63 +302,63 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_resize_down at stack.cpp(198):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_resize_down at stack.cpp(232):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 2;
  	cap = 2;
  	data [0x602000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 2;
  	cap = 2;
  	data [0x602000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 2;
  	cap = 2;
  	data [0x602000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	*[1] = 1
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 1;
  	cap = 2;
  	data [0x602000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	[1] = 219540062 (POISON)
  }
 }
 
-stack_pop at stack.cpp(207):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(243):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 1;
  	cap = 2;
  	data [0x602000000010]
- 	*[0] = 0
+ 	*[0] = 1000
  	[1] = 219540062 (POISON)
  }
 }
 
-stack_resize_down at stack.cpp(182):
-stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
+stack_resize_down at stack.cpp(211):
+stk1[0x7fffe3686d40](CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 0;
  	cap = 2;
@@ -533,8 +368,8 @@ stk1[0x7ffe29125060](CANARY IS DEAD, ) at main at main.cpp(12)
  }
 }
 
-stack_resize_down at stack.cpp(198):
-stk1[0x7ffe29125060](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(12)
+stack_resize_down at stack.cpp(232):
+stk1[0x7fffe3686d40](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 0;
  	cap = 0;
@@ -542,8 +377,8 @@ stk1[0x7ffe29125060](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(
  }
 }
 
-stack_pop at stack.cpp(215):
-stk1[0x7ffe29125060](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(12)
+stack_pop at stack.cpp(257):
+stk1[0x7fffe3686d40](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 0;
  	cap = 0;
@@ -551,8 +386,8 @@ stk1[0x7ffe29125060](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(
  }
 }
 
-stack_dtor at stack.cpp(225):
-stk1[0x7ffe29125060](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(12)
+stack_dtor at stack.cpp(267):
+stk1[0x7fffe3686d40](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 0;
  	cap = 0;
@@ -560,579 +395,8 @@ stk1[0x7ffe29125060](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(
  }
 }
 
-stack_dtor at stack.cpp(232):
-stk1[0x7ffe29125060](CAPACITY LESS THAN SIZE, ZOMBIE STATUS, STACK CAPACITY IS 0, DATA HAS BAD PTR, CANARY IS DEAD, ) at main at main.cpp(12)
-{
- 	size = 1;
- 	cap = 0;
- 	data [0x3]
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 1;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	[1] = 0 (POISON)
- 	[2] = 0 (POISON)
- 	[3] = 0 (POISON)
- 	[4] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 2;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	[2] = 0 (POISON)
- 	[3] = 0 (POISON)
- 	[4] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 3;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	[3] = 0 (POISON)
- 	[4] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 4;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	[4] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 5;
- 	cap = 5;
- 	data [0x603000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 6;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	[6] = 0 (POISON)
- 	[7] = 0 (POISON)
- 	[8] = 0 (POISON)
- 	[9] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 7;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	[7] = 0 (POISON)
- 	[8] = 0 (POISON)
- 	[9] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 8;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	[8] = 0 (POISON)
- 	[9] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 9;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	*[8] = 8
- 	[9] = 0 (POISON)
- }
-}
-
-stack_push at stack.cpp(174):
-stk1[0x7ffe614710f0](ok) at main at main.cpp(11)
-{
- 	size = 10;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	*[8] = 8
- 	*[9] = 9
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 10;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	*[8] = 8
- 	*[9] = 9
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 9;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	*[8] = 8
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 9;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	*[8] = 8
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 8;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 8;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	*[7] = 7
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 7;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 7;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	*[6] = 6
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 6;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 6;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	*[5] = 5
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 5;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	[5] = 219540062 (POISON)
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 5;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	*[4] = 4
- 	[5] = 219540062 (POISON)
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 4;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	[4] = 219540062 (POISON)
- 	[5] = 219540062 (POISON)
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 4;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	*[3] = 3
- 	[4] = 219540062 (POISON)
- 	[5] = 219540062 (POISON)
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 3;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	[3] = 219540062 (POISON)
- 	[4] = 219540062 (POISON)
- 	[5] = 219540062 (POISON)
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 3;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	*[2] = 2
- 	[3] = 219540062 (POISON)
- 	[4] = 219540062 (POISON)
- 	[5] = 219540062 (POISON)
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_resize_down at stack.cpp(182):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 2;
- 	cap = 10;
- 	data [0x604000000010]
- 	*[0] = 0
- 	*[1] = 1
- 	[2] = 219540062 (POISON)
- 	[3] = 219540062 (POISON)
- 	[4] = 219540062 (POISON)
- 	[5] = 219540062 (POISON)
- 	[6] = 219540062 (POISON)
- 	[7] = 219540062 (POISON)
- 	[8] = 219540062 (POISON)
- 	[9] = 219540062 (POISON)
- }
-}
-
-stack_resize_down at stack.cpp(198):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 2;
- 	cap = 2;
- 	data [0x602000000010]
- 	*[0] = 0
- 	*[1] = 1
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 2;
- 	cap = 2;
- 	data [0x602000000010]
- 	*[0] = 0
- 	*[1] = 1
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 2;
- 	cap = 2;
- 	data [0x602000000010]
- 	*[0] = 0
- 	*[1] = 1
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 1;
- 	cap = 2;
- 	data [0x602000000010]
- 	*[0] = 0
- 	[1] = 219540062 (POISON)
- }
-}
-
-stack_pop at stack.cpp(207):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 1;
- 	cap = 2;
- 	data [0x602000000010]
- 	*[0] = 0
- 	[1] = 219540062 (POISON)
- }
-}
-
-stack_resize_down at stack.cpp(182):
-stk1[0x7ffe614710f0](CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 0;
- 	cap = 2;
- 	data [0x602000000010]
- 	[0] = 219540062 (POISON)
- 	[1] = 219540062 (POISON)
- }
-}
-
-stack_resize_down at stack.cpp(198):
-stk1[0x7ffe614710f0](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 0;
- 	cap = 0;
- 	data [0x602000000030]
- }
-}
-
-stack_pop at stack.cpp(215):
-stk1[0x7ffe614710f0](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 0;
- 	cap = 0;
- 	data [0x602000000030]
- }
-}
-
-stack_dtor at stack.cpp(225):
-stk1[0x7ffe614710f0](STACK CAPACITY IS 0, CANARY IS DEAD, ) at main at main.cpp(11)
-{
- 	size = 0;
- 	cap = 0;
- 	data [0x602000000030]
- }
-}
-
-stack_dtor at stack.cpp(232):
-stk1[0x7ffe614710f0](CAPACITY LESS THAN SIZE, ZOMBIE STATUS, STACK CAPACITY IS 0, DATA HAS BAD PTR, CANARY IS DEAD, ) at main at main.cpp(11)
+stack_dtor at stack.cpp(281):
+stk1[0x7fffe3686d40](CAPACITY LESS THAN SIZE, ZOMBIE STATUS, STACK CAPACITY IS 0, DATA HAS BAD PTR, CANARY IS DEAD, ) at main at main.cpp(11)
 {
  	size = 1;
  	cap = 0;

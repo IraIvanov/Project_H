@@ -9,12 +9,12 @@
 #define ALIVE 1
 #define dump(stk, out, err) do_dump(&stk, __FUNCTION__, __LINE__, __FILE__, out, err)
 #define ASSERTED != 0 || printf("ERROR");
+#define CANARY_SIZE sizeof(unsigned long long)
 
 
-unsigned int rot13 (void* ptr) {
+unsigned int rot13 (void* ptr, size_t size) {
 
     unsigned int h = 0;
-    size_t size = malloc_usable_size(ptr);
 
     for(size_t i = 0; i < size; i++) {
         
@@ -26,6 +26,7 @@ unsigned int rot13 (void* ptr) {
     return h;
 }
 
+
 int func_verify(stack* stk){
 
     int err = 0;
@@ -35,10 +36,20 @@ int func_verify(stack* stk){
     if (stk->data && stk->capacity == 0 ) err |= DATA_NULL_CAP;
     if (stk->size > stk->capacity) err |= CAP_LES_SIZE;
     if(!stk->status) err |= ZOMBIE_STAT;
+
+    #ifdef CANARY_PROT
     if(stk->LEFT_CANARY != CANARY || stk->RIGHT_CANARY != CANARY ) err |= DEAD_CANARY;
+    #endif
+
+    #ifdef HASH_PROT
+    unsigned long long old_hash = stk->hash;
+    if(rot13(stk -> data, stk->capacity) != old_hash) err |= BAD_HASH;
+    #endif
 
     return err;
 }
+
+
 
 void p_error(int err_code, FILE* out) {
 
@@ -117,22 +128,30 @@ int _stack_ctor(stack* stk, size_t size, int line, const char* func, const char*
 
     int err = 0;
 
+    #ifdef NDEBUG
     if ( (err = func_verify(stk) ) == 1 ) dump(*stk, stk->info.log, err);
-    
-    stk -> data = (el_type*) calloc(size, sizeof(el_type));
+    #endif
+    stk -> data = (el_type*) calloc(size + 2*CANARY_SIZE, sizeof(el_type));
  
     stk -> size = 0;
     stk -> capacity = size;
     stk -> status = ALIVE;
 
+    #ifdef CANARY_PROT
     stk->LEFT_CANARY = CANARY;
     stk->RIGHT_CANARY = CANARY;
-    set_stack_inf(stk, line, func, file, name, log);
-    
-    if ( (err = func_verify(stk) ) ) dump(*stk, stk->info.log, err);
+    #endif
 
+    #ifdef HASH_PROT
+    stk->hash = 0;
+    #endif
+
+    #ifdef NDEBUG
+    set_stack_inf(stk, line, func, file, name, log);
+    if ( (err = func_verify(stk) ) ) dump(*stk, stk->info.log, err);
+    #endif
     //*(unsigned long long*)(stk -> data) = CANARY;
-    //*(unsigned long long*)(stk -> data) = CANARY;
+    //*(unsigned long long*)((char*)(stk -> data) + sizeof(el_type) * size + CANARY_SIZE) = CANARY; 
     
     return err;
 }
@@ -141,10 +160,12 @@ int stack_resize(stack* stk) {
 
     int err = 0;
     
+    #ifdef NDEBUG
     if ( (err = func_verify(stk)) ) dump(*stk, stk->info.log, err);
+    #endif
 
     void* tmp = NULL;
-    tmp = realloc(stk -> data, sizeof(el_type)*(stk -> capacity) * resize_up_const); //add tmp to check null ptr 
+    tmp = realloc(stk -> data, sizeof(el_type)*(stk -> capacity) * resize_up_const /*+ 2*CANARY_SIZE*/); //add tmp to check null ptr 
    
     if ( !tmp ) return ALLOC_ERR;
     
@@ -163,22 +184,30 @@ int stack_push(stack* stk, el_type value) {
 
     int err = 0;
 
+    #ifdef NDEBUG
     if ( ( err = func_verify(stk)) ) dump(*stk, stk->info.log, err);
-    
+    #endif
+
     if( stk -> size >= stk -> capacity ) stack_resize(stk);
     
-    (stk -> data)[stk -> size++] = value;
+    (stk -> data)[stk -> size++ /*+ CANARY_SIZE*/] = value;
     
-    if ( (err = func_verify(stk)) ) dump(*stk, stk->info.log, err);
-    
-    dump(*stk, stk->info.log, err);
+    #ifdef HASH_PROT
+    stk->hash = rot13(stk->data, stk->capacity);
+    #endif
+
+    #ifdef NDEBUG
+    if ( ( err = func_verify(stk)) ) dump(*stk, stk->info.log, err);
+    #endif
+
+    //dump(*stk, stk->info.log, err);
     return err;
 }
 //important func to static 
 static int stack_resize_down(stack* stk) {
 
     int err = 0;
-
+    #ifdef NDEBUG
     if ( (err = func_verify(stk)) ) dump(*stk, stk->info.log, err);
 
     for(size_t i = stk->size; i < (stk->capacity); i++ ) {
@@ -186,25 +215,33 @@ static int stack_resize_down(stack* stk) {
         stk -> data[i] = POISONED_EL;
 
     }
+    #endif
 
     void * tmp = NULL;
-    tmp = realloc(stk->data, sizeof(el_type) * (stk -> capacity) / resize_down_const);
+    tmp = realloc(stk->data, sizeof(el_type) * (stk -> capacity) / resize_down_const /*+ 2*CANARY_SIZE*/);
     
     if( !tmp ) return ALLOC_ERR;
 
     stk -> data = (el_type*)tmp;
     stk -> capacity /= resize_down_const;
-
+    #ifdef HASH_PROT
+    stk->hash = rot13(stk->data, stk->capacity);
+    #endif
+    //*(unsigned long long*)(stk -> data + stk -> capacity + sizeof(CANARY) / sizeof(el_type)) = CANARY;
+    #ifdef CANARY_PROT
     if (  (err = func_verify(stk))) dump(*stk, stk->info.log, err);
-
+    #endif
     return err;
 }
 
 int stack_pop(stack* stk, el_type* value) {
 
-    (value)ASSERTED;
+    
     int err = 0;
+    #ifdef NDEBUG
+    (value)ASSERTED;
     if ( (err = func_verify(stk))) dump(*stk, stk->info.log, err);
+    #endif
 
     *value = (stk -> data)[stk -> size - 1];
     stk ->data[stk -> size - 1] = POISONED_EL;
@@ -212,8 +249,13 @@ int stack_pop(stack* stk, el_type* value) {
 
     if ( stk -> size <= (stk -> capacity / 4)) stack_resize_down(stk);
     
+    #ifdef HASH_PROT
+    stk->hash = rot13(stk->data, stk->capacity);
+    #endif
+
+    #ifdef NDEBUG
     if ( (err = func_verify(stk)) ) dump(*stk, stk->info.log, err);
-    
+    #endif
     //dump(*stk, stk->info.log, err);
     return err; 
 }
@@ -221,16 +263,25 @@ int stack_pop(stack* stk, el_type* value) {
 int stack_dtor(stack* stk) {
 
     int err = 0;
-    
+    #ifdef NDEBUG
     if ( (err = func_verify(stk)) ) dump(*stk, stk->info.log, err);
-    
+    #endif
+
     free(stk -> data);
     stk -> data = POISONED_DATA; //(void*)1488
     stk -> size = 1;
     stk -> capacity = 0;
     stk -> status = ZOMBIE;
+    
+    #ifdef HASh_PROT
+    stk->hash = rot13(stk->data, stk->capacity);
+    #endif
+
+    #ifdef NDEBUG
     if ( (err = func_verify(stk)) ) dump(*stk, stk->info.log, err);
+    
     fclose(stk->info.log);
+    #endif
     return err;
 }
 
@@ -277,9 +328,10 @@ static void do_dump(stack* stk, const char* func, int line, const char* file, FI
     }
     
     for(size_t i = stk->size; i < stk->capacity; i++) {
-    
-        fprintf( out, " \t[%lu] = %d (POISON)\n", i, stk->data[i]);
-    
+        
+        fprintf( out, " \t[%lu] = %d ", i, stk->data[i]);
+        if (stk->data[i] == POISONED_EL) fprintf(out, "(POISON)");
+        fprintf(out, "\n");
     }
     
     fprintf(out, " }\n}\n\n");

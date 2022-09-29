@@ -22,6 +22,8 @@ int main() {
     }
     stk1.LEFT_CANARY = 1;
     for(int i = 0; i < 10; i++) {
+
+        stk1.data[0] =1000;
         stack_pop(&stk1, &value);
         printf("poped %d\n", value);
     }

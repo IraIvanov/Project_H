@@ -6,7 +6,9 @@
 
 #define dump(stk, out, err) do_dump(&stk, __FUNCTION__, __LINE__, __FILE__, out, err)
 #define stack_ctor(stk, size) _stack_ctor(&stk, size, __LINE__, __FUNCTION__, __FILE__, #stk, fopen("log.txt", "a"))
-
+#define CANARY_PROT
+//#define HASH_PROT
+#define NDEBUG
 const unsigned long long CANARY = 0xCAFEBABE;
 
 typedef int el_type;
@@ -50,9 +52,10 @@ enum ERRORS{
 };*/
 
 typedef struct Stack_t {
-
+    #ifdef CANARY_PROT
     unsigned long long LEFT_CANARY;
-
+    #endif
+    
     el_type* data;
 
     size_t size;
@@ -61,12 +64,21 @@ typedef struct Stack_t {
 
     int status;
 
+    #ifdef NDEBUG
     stack_info info;
+    #endif
 
+    #ifdef HASH_PROT
+    unsigned long long hash;
+    #endif
+
+    #ifdef CANARY_PROT
     unsigned long long RIGHT_CANARY;
+    #endif
 } stack;
 
-unsigned int rot13 (void* ptr);
+
+unsigned int rot13 (void* ptr, size_t size);
 
 int _stack_ctor(stack* stk, size_t size, int line, const char* func, const char* file, const char* name, FILE* log);
 
