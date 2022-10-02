@@ -3,12 +3,17 @@
 #ifndef MY_SORT_H_INCLUDED
 #define MY_SORT_H_INCLUDED
 
-
-#define dump(stk, out, err) do_dump(&stk, __FUNCTION__, __LINE__, __FILE__, out, err)
-#define stack_ctor(stk, size) _stack_ctor(&stk, size, __LINE__, __FUNCTION__, __FILE__, #stk, fopen("log.txt", "a"))
 #define CANARY_PROT
-//#define HASH_PROT
+#define HASH_PROT
 #define NDEBUG
+#ifdef NDEBUG
+#define LOG fopen("log.txt", "a")
+#else
+#define LOG
+#endif
+
+
+#define stack_ctor(stk, size) _stack_ctor(&stk, size, __LINE__, __FUNCTION__, __FILE__, #stk/*, fopen("log.txt", "w")*/)
 const unsigned long long CANARY = 0xCAFEBABE;
 
 typedef int el_type;
@@ -31,7 +36,7 @@ typedef struct Stack_info_t {
 
     const char* func;
 
-    FILE* log;
+    //FILE* log;
 
 } stack_info;
 
@@ -80,13 +85,10 @@ typedef struct Stack_t {
 
 unsigned int rot13 (void* ptr, size_t size);
 
-int _stack_ctor(stack* stk, size_t size, int line, const char* func, const char* file, const char* name, FILE* log);
+int _stack_ctor(stack* stk, size_t size, int line, const char* func, const char* file, const char* name/*, FILE* log*/);
 
-int stack_resize(stack* stk);
 
 int stack_push(stack* stk, el_type value);
-
-static int stack_resize_down(stack* stk);
 
 int stack_pop(stack* stk, el_type* value);
 
@@ -94,7 +96,6 @@ int stack_dtor(stack* stk);
 
 void free_stack_inf(stack* stk);
 
-static void set_stack_inf(stack* stk, int line, const char* func, const char* file, const char* name, FILE* log);
 
 int func_verify(stack* stk);
 
@@ -102,6 +103,5 @@ void p_error(int err_code, FILE* out);
 
 void print_stack_inf(stack* stk);
 
-static void do_dump(stack* stk, const char* func, int line, const char* file, FILE* out, int err) ;
 
 #endif
