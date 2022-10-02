@@ -12,14 +12,22 @@
 #define LOG
 #endif
 
+#ifdef CANARY_PROT
+#define CANARY_SIZE sizeof(unsigned long long)
+#else
+#define CANARY_SIZE 0
+#endif
 
 #define stack_ctor(stk, size) _stack_ctor(&stk, size, __LINE__, __FUNCTION__, __FILE__, #stk/*, fopen("log.txt", "w")*/)
+
+
 const unsigned long long CANARY = 0xCAFEBABE;
 
 typedef int el_type;
 
 const el_type POISONED_EL = 0xD15EA5E;
 
+#define el_size sizeof(el_type)
 #define POISONED_DATA (el_type*)3 
 
 const unsigned resize_up_const = 2, resize_down_const = 4;

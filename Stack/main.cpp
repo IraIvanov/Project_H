@@ -12,12 +12,12 @@ int main() {
     //stack_pop(&stk1, &value);
     //print_stack_inf(&stk1);
     //printf("%d\n", value);
-    for(int i = 0; i < 100; i++) {
-        stack_push(NULL, i);
+    for(int i = 0; i < 10; i++) {
+        stack_push(&stk1, i);
     }
-    for(int i = 0; i < 100; i++) {
+    for(int i = 0; i <10; i++) {
 
-        stack_pop(NULL, &value);
+        stack_pop(&stk1, &value);
         printf("poped %d\n", value);
     }
     stack_dtor(NULL);
