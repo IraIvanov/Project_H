@@ -360,7 +360,7 @@ int _stack_ctor(stack* stk, size_t size, int line, const char* func, const char*
         return err; 
     } 
     #endif
-    stk -> data = (el_type*) calloc(size + 2*CANARY_SIZE, sizeof(el_type));
+    stk -> data = (el_type*) calloc(size*sizeof(el_type) + 2*CANARY_SIZE, sizeof(char));
  
     stk -> size = 0;
     stk -> capacity = size;
