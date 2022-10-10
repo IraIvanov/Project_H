@@ -16,88 +16,13 @@
 
 #define DEBUG(stk) if ( ( err = func_verify(stk)) ){ \
         dump(stk, LOG, err);\
-        p_console_error(err);\
+        p_error(err, stdout);\
         fprintf(stdout, "\n");\
         return err; \
     } 
 
 
 #ifdef NDEBUG
-
-
-static void p_console_error(int err_code) {
-
-    int i = 0;
-    
-    if (err_code == 1) {
-        
-        fprintf(stdout, "%sSTACK NULL PTR%s ",RED, ESC);
-        return;
-    }
-
-    err_code /= 2;
-
-    while (err_code) {
-
-        i++;
-
-        if(err_code % 2){   
-
-            switch (i) {
-                
-            case 1:
-                    
-                fprintf(stdout, "%sDATA NULL PTR%s, ", RED, ESC);
-                break;
-            
-            case 2:
-
-                fprintf(stdout,"%sCAPACITY LESS THAN SIZE%s, ", RED, ESC);
-                break;
-            
-            case 3:
-
-                fprintf(stdout, "%sZOMBIE STATUS%s, ", RED, ESC);
-                break;
-
-            case 4:
-
-                fprintf(stdout, "%sSTACK CAPACITY IS 0%s, ", RED, ESC);
-                break;
-            
-            case 5:
-
-                fprintf(stdout, "%sALLOCATION ERROR%s, ", RED, ESC);
-                break;
-
-            case 6:
-
-                fprintf(stdout, "%sDATA HAS BAD PTR%s, ", RED, ESC);
-                break;
-
-            case 7:
-
-                fprintf(stdout, "%sCANARY IS DEAD%s, ", RED, ESC);
-                break;
-
-            case 8:
-
-                fprintf(stdout, "%sBAD HASH%s, ", RED, ESC);
-                break;
-            
-            default:
-
-                fprintf(stdout, "%sUNKNOWN ERROR CODE%s ", RED, ESC);
-                break;
-            }
-    
-        }
-        err_code /= 2;
-    }
-
-    return;
-}
-
 
 
 static void set_stack_inf(stack* stk, int line, const char* func, const char* file, const char* name/*, FILE* log CHANGED*/) {
@@ -120,7 +45,9 @@ void print_stack_inf(stack* stk) {
     return;
 
 }
-static void do_dump(stack* stk, const char* func, int line, const char* file, FILE* out, int err) {
+
+#endif
+void do_dump(stack* stk, const char* func, int line, const char* file, FILE* out, int err) {
 
     assert(func && line && file && out);
     fprintf(out, "%s at %s(%d):\n", func, file, line);
@@ -164,7 +91,7 @@ static void do_dump(stack* stk, const char* func, int line, const char* file, FI
 
 
 }
-#endif
+
 
 
 #define dump(stk, out, err) do_dump(stk, __FUNCTION__, __LINE__, __FILE__, out, err)
@@ -173,20 +100,22 @@ static void do_dump(stack* stk, const char* func, int line, const char* file, FI
 static int stack_resize_down(stack* stk) {
 
     int err = 0;
+    dump(stk, LOG, err);
     #ifdef NDEBUG
         DEBUG(stk)
     #endif
     //dump(stk, LOG, err); DEBUG
-    for(size_t i = stk->size; i < (stk->capacity); i++ ) {
+    /*for(size_t i = stk->size; i < (stk->capacity); i++ ) {
 
         ((el_type*)((char*)stk -> data + CANARY_SIZE))[i] = POISONED_EL;
 
-    }
+    }*/
 
     void * tmp = NULL;
     #ifdef CANARY_PROT
     *(unsigned long long*)((char*)(stk->data) + CANARY_SIZE + stk->capacity*sizeof(el_type)) = 0;
     #endif
+    dump(stk, LOG, err);
     tmp = realloc(stk->data, sizeof(el_type) * (stk -> capacity) / resize_up_const /*resize_down_const DEBUG*/ + 2 * CANARY_SIZE );
     
     if( !tmp ) return ALLOC_ERR;
@@ -196,10 +125,10 @@ static int stack_resize_down(stack* stk) {
     #ifdef CANARY_PROT
 
     //memcpy((char*)(stk->data) + CANARY_SIZE + stk->capacity*sizeof(el_type), &CANARY, CANARY_SIZE);CHANGED 
-    *(unsigned long long*)((char*)(stk->data + stk->capacity) + CANARY_SIZE) = CANARY;
+    *(unsigned long long*)(((char*)(stk->data) + sizeof(el_type)*(stk->capacity)) + CANARY_SIZE) = CANARY;
     #endif
     #ifdef HASH_PROT
-    stk->hash = rot13((char*)stk->data + CANARY_SIZE, stk->capacity);
+    stk->hash = rot13((char*)stk->data + CANARY_SIZE, stk->capacity); 
     #endif
     #ifdef NDEBUG
         DEBUG(stk)
@@ -230,7 +159,7 @@ static int stack_resize(stack* stk) {
     }
     #ifdef CANARY_PROT
     //memcpy((char*)(stk->data) + CANARY_SIZE + stk->capacity*sizeof(el_type), &CANARY, CANARY_SIZE); CHANGED
-    *(unsigned long long*)((char*)(stk->data + stk->capacity) + CANARY_SIZE) = CANARY;
+    *(unsigned long long*)((char*)(stk->data + stk->capacity) + CANARY_SIZE) = CANARY; //too
     #endif
     return err;
 }
@@ -280,16 +209,23 @@ int func_verify(stack* stk){
 void p_error(int err_code, FILE* out) {
 
     int i = 0;
+    char *red = "", *esc = "";
+
+    if ( out == stdout ) {
     
+        red = "\x1b[31m";
+        esc = "\x1b[0m";
+    }
+
     if (err_code == 1) {
         
-        fprintf(out, "STACK NULL PTR ");
+        fprintf(out, "%sSTACK NULL PTR%s ",RED, ESC);
         return;
     }
 
     err_code /= 2;
 
-    while (err_code) {
+     while (err_code) {
 
         i++;
 
@@ -299,47 +235,47 @@ void p_error(int err_code, FILE* out) {
                 
             case 1:
                     
-                fprintf(out, "DATA NULL PTR, ");
+                fprintf(out, "%sDATA NULL PTR%s, ", red, esc);
                 break;
             
             case 2:
 
-                fprintf(out,"CAPACITY LESS THAN SIZE, ");
+                fprintf(out,"%sCAPACITY LESS THAN SIZE%s, ", red, esc);
                 break;
             
             case 3:
 
-                fprintf(out, "ZOMBIE STATUS, ");
+                fprintf(out, "%sZOMBIE STATUS%s, ", red, esc);
                 break;
 
             case 4:
 
-                fprintf(out, "STACK CAPACITY IS 0, ");
+                fprintf(out, "%sSTACK CAPACITY IS 0%s, ", red, esc);
                 break;
             
             case 5:
 
-                fprintf(out, "ALLOCATION ERROR, ");
+                fprintf(out, "%sALLOCATION ERROR%s, ", red, esc);
                 break;
 
             case 6:
 
-                fprintf(out, "DATA HAS BAD PTR, ");
+                fprintf(out, "%sDATA HAS BAD PTR%s, ", red, esc);
                 break;
 
             case 7:
 
-                fprintf(out, "CANARY IS DEAD, ");
+                fprintf(out, "%sCANARY IS DEAD%s, ", red, esc);
                 break;
 
             case 8:
 
-                fprintf(out, "BAD HASH, ");
+                fprintf(out, "%sBAD HASH%s, ", red, esc);
                 break;
             
             default:
 
-                fprintf(out, "UNKNOWN ERROR CODE ");
+                fprintf(out, "%sUNKNOWN ERROR CODE%s ", red, esc);
                 break;
             }
     
@@ -383,7 +319,7 @@ int _stack_ctor(stack* stk, size_t size, int line, const char* func, const char*
     //memcpy(stk->data, &CANARY, CANARY_SIZE); CHANGED
     *(unsigned long long*)((char*)(stk->data)) = CANARY;
     //memcpy((char*)(stk->data) + CANARY_SIZE + stk->capacity*sizeof(el_type), &CANARY, CANARY_SIZE); CHANGED
-    *(unsigned long long*)((char*)(stk->data + stk->capacity) + CANARY_SIZE) = CANARY;
+    *(unsigned long long*)((char*)(stk->data + stk->capacity) + CANARY_SIZE) = CANARY; //too
     #endif
 
     #ifdef HASH_PROT
@@ -439,7 +375,7 @@ int stack_pop(stack* stk, el_type* value) {
     stk->hash = rot13((char*)stk->data + CANARY_SIZE, stk->capacity);
     #endif
 
-    if ( stk -> size <= (stk -> capacity / resize_down_const)) stack_resize_down(stk);
+    if ( stk -> size <= (stk -> capacity / resize_down_const) && (stk->capacity/resize_down_const) >= 1) stack_resize_down(stk);
     
     #ifdef HASH_PROT
     stk->hash = rot13((char*)stk->data + CANARY_SIZE, stk->capacity);
