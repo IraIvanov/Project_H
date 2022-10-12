@@ -61,7 +61,7 @@ int cmd_get(char *code, char***cmd, size_t* size, size_t code_size) {
     for(size_t i = 0; code[i] != '\0'; i++) { 
 
         if ( code[i] == '\n') {
-
+            code[i++] = '\0';
             while(code[i] == '\n' && code[i+1]!= '\0') i++;
             (*cmd)[cmd_i] = code + cmd_place;
             cmd_place = i;
@@ -77,9 +77,10 @@ int cmd_get(char *code, char***cmd, size_t* size, size_t code_size) {
 void cmd_print(char** cmd, size_t cmd_size){
     
     for(size_t i = 0; i < cmd_size; i++) {
-        for(size_t j = 0; cmd[i][j] != '\n'; j++){
+        /*for(size_t j = 0; cmd[i][j] != '\n'; j++){
             printf("%c", cmd[i][j]);
-        }
+        }*/
+        printf("%s", cmd[i]);
         printf("\n");
     }
     return;

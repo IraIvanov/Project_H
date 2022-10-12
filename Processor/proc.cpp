@@ -23,11 +23,11 @@ int main(int argc, char *argv[]) {
     }
 
     el_type* code;
-    int version = 0;
+    char version = 0;
     short signature = 0;
     size_t code_size;
     
-    fread(&version, sizeof(int), 1, input);
+    fread(&version, sizeof(char), 1, input);
     
     if (version != VERSION) {
         fprintf(stderr, "\x1b[31m ERROR, WRONG VERSION \x1b[0m\n");

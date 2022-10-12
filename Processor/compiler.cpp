@@ -36,9 +36,18 @@ int main(int argc, char *argv[]) {
     char**cmd = NULL;
     size_t cmd_size = 0;
     cmd_get(code, &cmd, &cmd_size, code_size);
-    cmd_print(cmd, cmd_size);
+    int marks[MARKS_SIZE] = {-1};
+    size_t arr_size = cmd_analyse(cmd, cmd_size, marks, MARKS_SIZE);
     
-    el_type *arr = (el_type*)calloc( sizeof(el_type), ARR_CAP);
+    if ( !arr_size) {
+        printf ("\x1b[31m ASSEMBLING ERROR \x1b[0m");
+        return -1;
+    }
+
+    //printf("%lu\n", arr_size);
+    char *arr = (char*)calloc( sizeof(char), arr_size);
+
+    //printf("ARRAY SIZE : [%lu]\n", arr_size);
     
     if ( !arr ){
         
@@ -47,110 +56,10 @@ int main(int argc, char *argv[]) {
         free(code);
         return -1;
     }
-    /*FILE* log = fopen("log.txt", "w"); <----------- DEBUG
-    fwrite(code, sizeof(char), code_size, log);
-    fclose(log);*/ 
 
-    char* command = (char*)calloc(sizeof(char), ARR_CAP);
-    if ( !command ){
-        printf("\x1b[31m CMD BUFF\x1b[0m");
-        fclose(input);
-        free(arr);
-        free(code);
+    if ( assamble(cmd, cmd_size, marks, arr) == -1) {
+        printf( "SYNTAX ERROR\n");
         return -1;
-    }
-
-    long unsigned int offset = 0;
-    int var = 0, cmd_code = 0;
-    size_t arr_size = 0, arr_capacity = ARR_CAP;
-
-    while ( offset < code_size && code[offset] != '\0' ) {
-    
-        sscanf(code + offset, "%s", command);
-        offset = (size_t)(strstr(code + offset, command) - code) + strlen(command);
-        //printf("%ld\n", offset); <----------------DEBUG
-
-        if ( (cmd_code = command_verify( command ) ) != NUN) {
-
-            //printf("%d\n", cmd_code); <-----------DEBUG
-        
-            if (cmd_code == PUSH) {
-
-                if ( !sscanf(code + offset, "%d", &var) ){
-                    
-                    printf("SYNTAX ERROR, EXPECTED VALUE OF PUSH");
-                    fclose(input);
-                    free(arr);
-                    free(code);
-                    free(command);
-                    return -1;
-
-                }   else {
-
-                    if ( arr_size >=( arr_capacity - 1)){
-
-                        void* tmp;
-                        tmp = realloc(arr, sizeof(el_size)*2*arr_capacity);
-                        
-                        if (!tmp){
-                            printf(" OUT OFF MEMORY ");
-                            free(command);
-                            free(code);
-                            fclose(input);
-                            return - 1;
-                        }
-
-                        arr = (el_type*)tmp;
-                        arr_capacity *= 2;
-
-                    }
-
-                    arr[arr_size++] = cmd_code;
-                    arr[arr_size++] = var;
-
-                    //arr_print(arr, arr_size-1); <------ DEBUG
-
-                    while(code[offset] != '\n' && code[offset] != '\0') offset++;
-
-                }
-
-            } else {
-
-                 if ( arr_size >= arr_capacity){
-
-                        void* tmp;
-                        tmp = realloc(arr, sizeof(el_size)*2*arr_capacity);
-                        
-                        if (!tmp){
-                            printf(" OUT OFF MEMORY ");
-                            free(command);
-                            free(code);
-                            fclose(input);
-                            return - 1;
-                        }
-
-                        arr = (el_type*)tmp;
-                        arr_capacity *= 2;
-
-                }
-                arr[arr_size++] = cmd_code;
-
-                while(code[offset] != '\n' && code[offset] != '\0') offset++;
-            
-            }
-        
-        } else {
-
-            printf("SYNTAX ERROR, UNKNOWN COMMAND!\n");
-            fclose(input);
-            free(arr);
-            free(code);
-            free(command);
-            return -1;
-        
-        }
-        /*printf("%d\n", offset); <----- DEBUG
-        printf("%c", code[offset]);*/
     }
 
     FILE* output = fopen("a.out", "w");
@@ -161,21 +70,22 @@ int main(int argc, char *argv[]) {
         fclose(input);
         free(arr);
         free(code);
-        free(command);
+        //free(command);
         return -1;
 
     }
-
-    fwrite(&VERSION, sizeof(int), 1, output);
+    //printf("ARRAY SIZE : [%lu]\n", arr_size);
+    fwrite(&VERSION, sizeof(char), 1, output);
     fwrite(SIGNATURE, sizeof(short), 1, output);
     fwrite(&arr_size, sizeof(size_t), 1, output);
-    fwrite(arr, sizeof(el_type), arr_size, output);
-    fwrite(arr, sizeof(el_type), arr_size, output);
+    //printf("ARRAY SIZE : [%lu]\n", arr_size);
+    fwrite(arr, sizeof(char), arr_size, output);
     fclose(output);
     fclose(input);
     free(arr);
     free(code);
-    free(command);
+    free(cmd);
+    //free(command);
 
     return 0;
 
