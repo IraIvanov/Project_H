@@ -1,9 +1,21 @@
-PUSH 10
-PUSH 20
 ADD
-PUSH 1
-PUSH 2
-ADD
+
+
+
+
+ADD ;1232
 DIV
+SUB ;123
 OUT
+
+
+push [rax]; push [rax] push rax
+POP [1]
+:label
+JMP 2
+JMP :label
+POP [1]
+MUL
+DUP ;123
+DUMP
 HLT

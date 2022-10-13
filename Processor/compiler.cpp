@@ -36,7 +36,9 @@ int main(int argc, char *argv[]) {
     char**cmd = NULL;
     size_t cmd_size = 0;
     cmd_get(code, &cmd, &cmd_size, code_size);
-    int marks[MARKS_SIZE] = {-1};
+    cmd_print(cmd, cmd_size);
+    label* marks;
+    labels_ctor(&marks, MARKS_SIZE);
     size_t arr_size = cmd_analyse(cmd, cmd_size, marks, MARKS_SIZE);
     
     if ( !arr_size) {
@@ -44,10 +46,8 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    //printf("%lu\n", arr_size);
     char *arr = (char*)calloc( sizeof(char), arr_size);
 
-    //printf("ARRAY SIZE : [%lu]\n", arr_size);
     
     if ( !arr ){
         
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    if ( assamble(cmd, cmd_size, marks, arr) == -1) {
+    if ( assamble(cmd, cmd_size, marks, arr, MARKS_SIZE) == -1) {
         printf( "SYNTAX ERROR\n");
         return -1;
     }
@@ -70,21 +70,20 @@ int main(int argc, char *argv[]) {
         fclose(input);
         free(arr);
         free(code);
-        //free(command);
         return -1;
 
     }
-    //printf("ARRAY SIZE : [%lu]\n", arr_size);
     fwrite(&VERSION, sizeof(char), 1, output);
     fwrite(SIGNATURE, sizeof(short), 1, output);
     fwrite(&arr_size, sizeof(size_t), 1, output);
-    //printf("ARRAY SIZE : [%lu]\n", arr_size);
     fwrite(arr, sizeof(char), arr_size, output);
     fclose(output);
     fclose(input);
     free(arr);
     free(code);
     free(cmd);
+    labels_dtor(marks);
+    free(marks);
     //free(command);
 
     return 0;
