@@ -38,7 +38,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
         var1 = 0;
         var2 = 0;
         val = 0;
-        printf("command is %c\n", code[ip]);
+        //printf("command is%0x %0x \n", code[ip], code[ip] & CMD_BYTES);
         switch (code[ip] & CMD_BYTES){
             
             case PUSH:
@@ -51,27 +51,39 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                         val = ram[arg];
                         //printf("pushing[%lf]\n", val);
                         //printf("RAM %lf\n", ram[arg]); 
+                        stack_push(stk, val);
+                        printf("pushing[%lf]\n", val);
+                        break;
                     }
                     if (code[ip] & IMMED_FLAG) {
                         ip++;
                         int arg = *(int*)(code + ip);
                         ip += sizeof(int);
                         val = ram[arg];
+                        stack_push(stk, val);
+                        printf("pushing[%lf]\n", val);
+                        break;
                         //printf("RAM %lf\n", ram[arg]);
                     }
                     
                 }
-
+                //printf("wtf %0x \n", code[ip] & REG_FLAG);
                 if ( code[ip] & REG_FLAG ) {
                         ip++;
-                        int arg = (int)code[ip];
+                        int arg = (int)code[ip++];
                         val = regs[arg];
-                        ip += sizeof(char);
+                        stack_push(stk, val);
+                        printf("pushing[%lf]\n", val);
+                        break;
                 }
+                //printf("wtf %0x \n", code[ip] & IMMED_FLAG);
                 if (code[ip] & IMMED_FLAG) {
                     ip++;
                     val = *(el_type*)(code + ip);
                     ip += sizeof(el_type);
+                    stack_push(stk, val);
+                    printf("pushing[%lf]\n", val);
+                    break;
                 }
                 stack_push(stk, val);
                 printf("pushing[%lf]\n", val);
