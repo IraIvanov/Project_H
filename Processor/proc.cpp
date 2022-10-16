@@ -51,13 +51,15 @@ int main(int argc, char *argv[]) {
     el_type var1 = 0;
     el_type var2 = 0;
     stack stk = { };
+    stack stk_addr = { };
     stack_ctor(stk, 64);
+    stack_ctor(stk_addr, 64);
     size_t i = 0;
     FILE *log =fopen("log", "w");
     fwrite(code, sizeof(char), code_size, log);
     fclose(log);
 
-    if ( execute(code, code_size, &stk, ram, RAM_SIZE, regs) == -1) {
+    if ( execute(code, code_size, &stk,&stk_addr, ram, RAM_SIZE, regs) == -1) {
         printf("EXEC ERROR\n");
         return -1;
     }
