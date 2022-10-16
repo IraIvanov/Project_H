@@ -44,6 +44,14 @@ enum CMD_SIZE {
     POP_S  = 3,
     MARK_S = 1,
     DUP_S  = 3,
+    CALL_S = 4,
+    RET_S  = 3,
+    JB_S   = 2,
+    JBE_S  = 3,
+    JA_S   = 2,
+    JAE_S  = 3,
+    JE_S   = 2,
+    JNE_S  = 3,
     NUN_S  = 1488,
 };
 
@@ -65,9 +73,9 @@ enum REGS {
 //100 11111
 //765 43210
 enum flags {
-    RAM_FLAG   = 0x80,
-    REG_FLAG   = 0x40,
-    IMMED_FLAG = 0x20,
+    RAM_FLAG   = 0b10000000,
+    REG_FLAG   = 0b01000000,
+    IMMED_FLAG = 0b00100000,
 };
 
 #define SIGNATURE "SP"
@@ -112,7 +120,7 @@ int labels_ctor(label** marks, size_t MARKS_SIZE);
 
 int labels_dtor(label* marks);
 
-int execute (char *code, size_t code_size, stack* stk, el_type* ram, size_t ram_size, el_type *regs );
+int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type* ram, size_t ram_size, el_type *regs );
 
 int is_equal(el_type var1, el_type var2);
 

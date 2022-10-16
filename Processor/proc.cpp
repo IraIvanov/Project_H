@@ -61,62 +61,11 @@ int main(int argc, char *argv[]) {
 
     if ( execute(code, code_size, &stk,&stk_addr, ram, RAM_SIZE, regs) == -1) {
         printf("EXEC ERROR\n");
+        fclose(input);
+        free(code);
         return -1;
     }
     printf("we are here\n");
-    /*for(0; i < code_size; i++) {
-        if(  (cmd = code_verify(code[i])) == NUN){
-            
-            fprintf(stderr, "\x1b[31m ERROR UNKNOWN COMMAND \x1b[0m\n");
-            fclose(input);
-            free(code);
-            return -1;
-        }
-
-        switch (cmd)
-        {
-        case PUSH:
-            stack_push(&stk, code[++i]);
-            printf("pushing[%d]\n", code[i]);
-            break;
-        case ADD:
-            stack_pop(&stk, &var1);
-            stack_pop(&stk, &var2);
-            printf("add var1[%d]  var2[%d]\n", var1, var2);
-            stack_push(&stk, var1 + var2);
-            break;
-        case SUB:
-            stack_pop(&stk, &var1);
-            stack_pop(&stk, &var2);
-            printf("sub var1[%d]  var2[%d]\n", var1, var2);
-            stack_push(&stk, var2 - var1);
-            break;
-        case MUL:
-            stack_pop(&stk, &var1);
-            stack_pop(&stk, &var2);
-            printf("mul var1[%d]  var2[%d]\n", var1, var2);
-            stack_push(&stk, var1*var2);
-            break;
-        case DIV:
-            stack_pop(&stk, &var1);
-            stack_pop(&stk, &var2);
-            printf("div var1[%d]  var2[%d]\n", var1, var2);
-            stack_push(&stk, var2 / var1);
-            break;
-        case OUT:
-            stack_pop(&stk, &var1);
-            printf("%d\n", var1);
-            break;
-        case HLT:
-            stack_dtor(&stk);
-            printf("stack destroied\n");
-            break;
-        default:
-            printf("dumping\n");
-            //dump_proc(code, i);
-            break;
-        }
-    }*/
     fclose(input);
     free(code);
     return 0;

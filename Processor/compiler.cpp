@@ -42,7 +42,9 @@ int main(int argc, char *argv[]) {
     size_t arr_size = cmd_analyse(cmd, cmd_size, marks, MARKS_SIZE);
     
     if ( !arr_size) {
-        printf ("\x1b[31m ASSEMBLING ERROR \x1b[0m");
+        printf ("\x1b[31m ASSEMBLING ERROR \x1b[0m \n");
+        labels_dtor(marks);
+        free(marks);
         return -1;
     }
 
@@ -51,14 +53,23 @@ int main(int argc, char *argv[]) {
     
     if ( !arr ){
         
-        printf("\x1b[31m CAN NOT CREAT ARRAY\x1b[0m");
+        printf("\x1b[31m CAN NOT CREAT ARRAY\x1b[0m \n");
         fclose(input);
         free(code);
+        labels_dtor(marks);
+        free(marks);
+        free(cmd);
         return -1;
     }
 
     if ( assamble(cmd, cmd_size, marks, arr, MARKS_SIZE) == -1) {
         printf( "SYNTAX ERROR\n");
+        fclose(input);
+        free(arr);
+        free(code);
+        free(cmd);
+        labels_dtor(marks);
+        free(marks);
         return -1;
     }
 
@@ -70,6 +81,9 @@ int main(int argc, char *argv[]) {
         fclose(input);
         free(arr);
         free(code);
+        free(cmd);
+        labels_dtor(marks);
+        free(marks);
         return -1;
 
     }

@@ -1,21 +1,90 @@
-ADD
+
+PUSH 1 ;a
+PUSH 4 ;b
+PUSH 4 ;c
+PUSH -4
+mul ; 1 3 -4*c
+POP rax ; 1 3 rax -4c
+dup
+dup
+mul ; 1 3 9 rax -4c
+;out
+pop rbx; 1 3 rax -4c rbx 9
+pop rcx; 1 rax -4c rbx 9 rcx 3
+dup
+push rax
+mul
+push rbx
+add ; 1 9-4ac rcx 3
+dup
+push 0
+jb :end ; 1 9-4ac rcx 3 
+POP rax ; 1 rax 9-4ac rcx 3
+POP rbx 
+push rax
+push 0
+call :sqrt
+push rdx  ; 1 rax 9-4ac rcx 3 rdx disc
 
 
+push rcx
+push -1
+mul
+
+push rdx
+add
+
+push rbx
+push 2
+mul
+div
+out
+push rdx  ; 1 rax 9-4ac rcx 3 rdx disc
 
 
-ADD ;1232
-DIV
-SUB ;123
-OUT
+push rcx
+push -1
+mul
 
+push rdx
+sub
 
-push [rax]; push [rax] push rax
-POP [1]
-:label
-JMP 2
-JMP :label
-POP [1]
-MUL
-DUP ;123
-DUMP
-HLT
+push rbx
+push 2
+mul
+div
+out
+:end
+hlt
+;hui
+:sqrt
+push rax
+push 0
+je :zero
+push 1;jopa
+pop rdx
+push 1
+:cycle
+push rax
+push rdx
+div 
+push rdx
+add;huihuihui
+push 2
+div
+pop rdx
+push 1
+add
+dup
+push 10
+jb :cycle
+ret
+:zero
+push rax
+pop rdx
+ret
+
+:error
+push 1337
+out
+ret
