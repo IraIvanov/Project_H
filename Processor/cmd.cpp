@@ -2,9 +2,10 @@
 #include "cmd.hpp"
 #include <sys/stat.h>
 #include <stdlib.h>
-#include "../Stack/stack.hpp"
+#include "stack.hpp"
 #include <string.h>
 #include "io.hpp"
+#include <unistd.h>
 /*
     SKIP REPLACE WITH TWO FUNC'S SKIP COMMENTS AND CHECK_SYNT
     ADD NAMED LABELS 
@@ -12,6 +13,167 @@
 
 
 */
+#include <math.h>
+
+#define CMD_BYTES 0x1F
+#define ARG_BYTES 0
+double const EPSILON = 0.00000001;
+
+int is_equal(el_type var1, el_type var2) {
+
+    if ( abs(var1 - var2) < EPSILON ) return 0;
+
+    return 1;
+
+}
+
+int execute (char *code, size_t code_size, stack* stk, el_type* ram, size_t ram_size, el_type *regs ) {
+
+    el_type var1 = 0, var2 = 0;
+    el_type val = 0;
+    int ip = 0;
+    //printf("debug\n");
+    while ( ip < code_size && ip >= 0) {
+        switch (code[ip] & CMD_BYTES){
+            case PUSH:
+
+                
+                if( code[ip] & 0x80 ){
+                    if ( code[ip] & 0x40 ) {
+                        ip++;
+                        char arg = regs[code[ip++]];
+                        val = ram[arg];
+                        //printf("RAM %lf\n", ram[arg]); 
+                    }
+                    if (code[ip] & 0x20) {
+                        ip++;
+                        int arg = *(int*)(code + ip);
+                        ip += sizeof(int);
+                        val = ram[arg];
+                        //printf("RAM %lf\n", ram[arg]);
+                    }
+                    
+                }
+
+                if ( code[ip] & 0x40 ) {
+                        ip++;
+                        val = regs[code[ip++]];
+                }
+                if (code[ip] & 0x20) {
+                    ip++;
+                    val = *(el_type*)(code + ip);
+                    ip += sizeof(el_type);
+                }
+                stack_push(stk, val);
+                printf("pushing[%lf]\n", val);
+                break;
+            case ADD:
+
+                stack_pop(stk, &var1);
+                stack_pop(stk, &var2);
+                printf("add var1[%lf]  var2[%lf]\n", var1, var2);
+                stack_push(stk, var1 + var2);
+                ip++;
+                break;
+            case SUB:
+
+                stack_pop(stk, &var1);
+                stack_pop(stk, &var2);
+                printf("sub var1[%lf]  var2[%lf]\n", var1, var2);
+                stack_push(stk, var2 - var1);
+                ip++;
+                break;
+            case MUL:
+                
+                stack_pop(stk, &var1);
+                stack_pop(stk, &var2);
+                printf("mul var1[%lf]  var2[%lf]\n", var1, var2);
+                stack_push(stk, var1*var2);
+                ip++;
+                break;
+            case DIV:
+
+                stack_pop(stk, &var1);
+                stack_pop(stk, &var2);
+                if ( is_equal( var1, 0 ) ){
+                    printf("EXECUTING ERROR, DIVISION BY ZERO");
+                    return -1;
+                }
+                printf("div var1[%lf]  var2[%lf]\n", var1, var2);
+                stack_push(stk, var2 / var1);
+                ip++;
+                break;
+            case OUT:
+                
+                stack_pop(stk, &var1);
+                printf("%lf\n", var1);
+                ip++;
+                break;
+            case DUMP:
+
+                printf("dumping...\n");
+                //dump_cpu(code, ip);
+                ip++;
+                break;
+            case HLT:
+                
+                stack_dtor(stk);
+                printf("stack destroied\n");
+                return 0;
+                break;
+            case JMP:
+                ip++;
+                //printf("%d\n", ip);
+                ip = *((int*)(code + ip));
+                //printf("%d\n", ip);
+                //printf("%c\n", code[ip]);
+                sleep(1);
+                break;
+            case POP:
+                
+                stack_pop(stk, &var1);
+
+                if( code[ip] & 0x80 ){
+                    if ( code[ip] & 0x40 ) {
+                        ip++;
+                        char arg = regs[code[ip++]];
+                        ram[arg] = var1; 
+                        //printf("RAM %lf\n", ram[arg]);
+                    }
+                    if (code[ip] & 0x20) {
+                        ip++;
+                        int arg = *(int*)(code + ip);
+                        ip += sizeof(int);
+                        ram[arg] = var1;
+                        //printf("RAM %lf\n", ram[arg]);
+                    }
+                }
+
+                if ( code[ip] & 0x40 ) {
+                        ip++;
+                        regs[code[ip++]] = var1;
+                }
+                //stack_push(stk, val);
+                printf("popping[%lf]\n", var1);
+                break;
+            case DUP:
+                stack_pop(stk, &var1);
+                stack_push(stk, var1);
+                stack_push(stk, var1);
+                printf("duplicating %lf\n", var1);
+                ip++;
+                break;
+            default:
+                printf("UNKNOWN COMMAND\n");
+                return -1;
+                break;
+        }
+    }
+
+    return 0;
+}
+
+
 int code_read( char** code, FILE* input, size_t* size){
 
     if ( !code ) return BUFF_NULL_PTR;
@@ -113,6 +275,14 @@ enum CMD command_verify ( char* command) {
     if ( !stricmp(command, "MUL\0")) return MUL;
     if ( !stricmp(command, "DIV\0")) return DIV;
     if ( !stricmp(command, "JMP\0")) return JMP;
+    /*if ( !stricmp(command, "JA\0")) return JA;
+    if ( !stricmp(command, "JAE\0")) return JAE;
+    if ( !stricmp(command, "JB\0")) return JB;
+    if ( !stricmp(command, "JBE\0")) return JBE;
+    if ( !stricmp(command, "JE\0")) return JE;
+    if ( !stricmp(command, "JNE\0")) return JNE;
+    if ( !stricmp(command, "CALL\0")) return CALL;
+    if ( !stricmp(command, "RET\0")) return RET;*/
     if ( command[0] == ':') return MARK;
     if ( !stricmp(command, "POP\0")) return POP;
     if ( !stricmp(command, "OUT\0")) return OUT;
@@ -215,6 +385,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                     return 2;
                 }
                 if ( sscanf( check_reg + check_reg_offset, "%d %n", &num, &offset2) ) {
+                    //printf("we are here : %d is int\n", num);
                     if ( check_synt(check_reg + check_reg_offset + offset2)== -1){
                     printf("SYNRAX ERROR, UNNOWN CONSTRACTION\n");   
                     return -1;
@@ -288,7 +459,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 for(size_t i = 0 ; i < marks_size; i++) {
                     if( (marks[i]).line == -1 ) {
                         //printf("line %d", line);
-                        marks[i].line = line + 1;
+                        marks[i].line = line;
                         marks[i].name = check_reg;
                         return 0;
                     }
@@ -383,21 +554,26 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
             int check_reg_offset = skip_sqares(check_reg);
             if ( check_reg_offset != 0 ) arr[tmp_ip] = cmd_code + RAM_FLAG;
             else arr[tmp_ip] = cmd_code;
-            char tmp_reg = -1;
-            if( ( (tmp_reg = (char)register_verify(check_reg + check_reg_offset) ) != REG_NUN )){
-                
+            int tmp_reg = -1;
+            //printf("here may be problem %s\n", check_reg);
+            //printf("here may be problem %s\n", check_reg + check_reg_offset);
+            if( ( (tmp_reg = register_verify(check_reg + check_reg_offset) ) != REG_NUN )){
+                //printf("tmp_reg is %d\n", tmp_reg);
+                //printf("tmp_reg is %d\n", REG_NUN);
+                //printf("here may be problem %s\n", check_reg + check_reg_offset);
                 arr[tmp_ip++] += REG_FLAG;
                 *ip += 1;
-                *(arr + tmp_ip) = tmp_reg;
+                *(arr + tmp_ip) = (char)tmp_reg;
                 free(check_reg);
                 *ip += sizeof(char);
                 return 0;
             }
-            
+            //printf("here may be problem %s\n", check_reg + check_reg_offset);
             if ( sscanf( check_reg + check_reg_offset, "%d", &num) ) 
             {
                 arr[tmp_ip++] += IMMED_FLAG;
                 *ip += 1;
+                //printf("we are here : %d is int\n", num);
                 *(int*)(arr + tmp_ip) = num;
                 *ip += sizeof(int);
                 free(check_reg);
@@ -468,6 +644,7 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
             if (check_reg_offset != 0) arr[tmp_ip] = cmd_code + RAM_FLAG;
             else  arr[tmp_ip] = cmd_code;
             int tmp_reg = -1;
+
             if( (tmp_reg = register_verify(check_reg + check_reg_offset)) != REG_NUN ) {
                 
                 arr[tmp_ip++] += REG_FLAG;

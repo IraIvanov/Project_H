@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <stdlib.h>
-#include "../Stack/stack.hpp"
+#include "stack.hpp"
 #include "io.hpp"
 
 #ifndef CMD_H_INCLUDED
@@ -20,7 +20,15 @@ enum CMD {
     MARK = 9,
     POP  = 10,
     DUP  = 11,
-    NUN  = 1488,
+    CALL = 12,
+    RET  = 13,
+    JB   = 14,
+    JBE  = 15,
+    JA   = 16,
+    JAE  = 17,
+    JE   = 18,
+    JNE  = 19,
+    NUN  = 0x1F,
 };
 
 enum CMD_SIZE {
@@ -51,14 +59,14 @@ enum REGS {
     rbx = 2,
     rcx = 3,
     rdx = 4,
-    REG_NUN = 1488,
+    REG_NUN = 255,
 
 };
 //100 11111
 //765 43210
 enum flags {
-    RAM_FLAG   = 0x40,
-    REG_FLAG   = 0x30,
+    RAM_FLAG   = 0x80,
+    REG_FLAG   = 0x40,
     IMMED_FLAG = 0x20,
 };
 
@@ -72,7 +80,10 @@ const size_t MAX_LINE= 1024;
 const int OFF = 0;
 const int ON = 1;
 
-int code_read( el_type** code, FILE* input, size_t* size);
+const size_t REG_SIZE = 4; 
+const size_t RAM_SIZE = 1024;
+
+int code_read( char** code, FILE* input, size_t* size);
 
 void arr_print(char* arr, size_t size);
 
@@ -100,6 +111,11 @@ int skip_sqares(char *str);
 int labels_ctor(label** marks, size_t MARKS_SIZE);
 
 int labels_dtor(label* marks);
+
+int execute (char *code, size_t code_size, stack* stk, el_type* ram, size_t ram_size, el_type *regs );
+
+int is_equal(el_type var1, el_type var2);
+
 
 
 #endif

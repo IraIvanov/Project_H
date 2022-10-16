@@ -4,6 +4,6 @@ CFLAGS= -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop
 all: compiler proc
 
 compiler: cmd.o io.o compiler.o
-		$(CC) $(CFLAGS) -o compiler cmd.o compiler.o io.o
+		$(CC) $(CFLAGS) -o compiler cmd.o compiler.o io.o stack.o
 proc: cmd.o proc.o io.o stack.o
-		$(CC) $(CFLAGS) -o proc cmd.o proc.o io.o stack.o
+	$(CC) $(CFLAGS) -o proc cmd.o proc.o io.o stack.o

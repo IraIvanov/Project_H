@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "io.hpp"
-#include "../Stack/stack.hpp"
+#include "stack.hpp"
 #include <string.h>
 #include "cmd.hpp"
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     char**cmd = NULL;
     size_t cmd_size = 0;
     cmd_get(code, &cmd, &cmd_size, code_size);
-    cmd_print(cmd, cmd_size);
+    //cmd_print(cmd, cmd_size);
     label* marks;
     labels_ctor(&marks, MARKS_SIZE);
     size_t arr_size = cmd_analyse(cmd, cmd_size, marks, MARKS_SIZE);

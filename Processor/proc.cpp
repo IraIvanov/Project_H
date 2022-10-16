@@ -1,7 +1,7 @@
 #include "cmd.hpp"
 #include <stdio.h>
 #include <stdlib.h>
-#include "../Stack/stack.hpp"
+#include "stack.hpp"
 
 int main(int argc, char *argv[]) {
     
@@ -22,11 +22,12 @@ int main(int argc, char *argv[]) {
 
     }
 
-    el_type* code;
+    char* code;
     char version = 0;
     short signature = 0;
     size_t code_size;
-    
+    el_type regs[REG_SIZE] = {0};
+    el_type ram[RAM_SIZE] = {0};    
     fread(&version, sizeof(char), 1, input);
     
     if (version != VERSION) {
@@ -46,15 +47,23 @@ int main(int argc, char *argv[]) {
 
     fread(&code_size, sizeof(size_t), 1, input);
     code_read(&code, input, NULL);
-    arr_print(code, code_size);
     int cmd = 0;
     el_type var1 = 0;
     el_type var2 = 0;
     stack stk = { };
     stack_ctor(stk, 64);
+    size_t i = 0;
+    FILE *log =fopen("log", "w");
+    fwrite(code, sizeof(char), code_size, log);
+    fclose(log);
 
-    for(size_t i = 0; i < code_size; i++) {
-        if( (cmd = code_verify(code[i])) == NUN){
+    if ( execute(code, code_size, &stk, ram, RAM_SIZE, regs) == -1) {
+        printf("EXEC ERROR\n");
+        return -1;
+    }
+    printf("we are here\n");
+    /*for(0; i < code_size; i++) {
+        if(  (cmd = code_verify(code[i])) == NUN){
             
             fprintf(stderr, "\x1b[31m ERROR UNKNOWN COMMAND \x1b[0m\n");
             fclose(input);
@@ -105,7 +114,7 @@ int main(int argc, char *argv[]) {
             //dump_proc(code, i);
             break;
         }
-    }
+    }*/
     fclose(input);
     free(code);
     return 0;
