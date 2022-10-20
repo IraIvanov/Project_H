@@ -27,6 +27,10 @@ int is_equal(el_type var1, el_type var2) {
 
 int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type* ram, size_t ram_size, el_type *regs ) {
 
+    if ( !code || !stk || !stk_addr || !ram || !regs ){
+        printf("EXEC ERROR, NULL PTR\n");
+        return -1;
+    }
     el_type var1 = 0, var2 = 0;
     el_type val = 0;
     int ip = 0;
@@ -81,7 +85,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                         int arg = (int)code[ip++];
                         val = regs[arg];
                         stack_push(stk, val);
-                        printf("pushing[%lf]\n", val);
+                        //printf("pushing[%lf]\n", val);
                         break;
                 }
                 //printf("wtf %0x \n", code[ip] & IMMED_FLAG);
@@ -90,17 +94,17 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                     val = *(el_type*)(code + ip);
                     ip += sizeof(el_type);
                     stack_push(stk, val);
-                    printf("pushing[%lf]\n", val);
+                    //printf("pushing[%lf]\n", val);
                     break;
                 }
                 stack_push(stk, val);
-            printf("pushing[%lf]\n", val);
+            //printf("pushing[%lf]\n", val);
                 break;
             case ADD:
 
                 stack_pop(stk, &var1);
                 stack_pop(stk, &var2);
-                printf("add var1[%lf]  var2[%lf]\n", var1, var2);
+                //printf("add var1[%lf]  var2[%lf]\n", var1, var2);
                 stack_push(stk, var1 + var2);
                 ip++;
                 break;
@@ -108,7 +112,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
 
                 stack_pop(stk, &var1);
                 stack_pop(stk, &var2);
-                printf("sub var1[%lf]  var2[%lf]\n", var1, var2);
+                //printf("sub var1[%lf]  var2[%lf]\n", var1, var2);
                 stack_push(stk, var2 - var1);
                 ip++;
                 break;
@@ -116,7 +120,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                 
                 stack_pop(stk, &var1);
                 stack_pop(stk, &var2);
-                printf("mul var1[%lf]  var2[%lf]\n", var1, var2);
+                //printf("mul var1[%lf]  var2[%lf]\n", var1, var2);
                 stack_push(stk, var1*var2);
                 ip++;
                 break;
@@ -130,7 +134,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                     stack_dtor(stk_addr);
                     return -1;
                 }
-                printf("div var1[%lf]  var2[%lf]\n", var1, var2);
+                //printf("div var1[%lf]  var2[%lf]\n", var1, var2);
                 stack_push(stk, var2 / var1);
                 ip++;
                 break;
@@ -139,7 +143,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                 stack_pop(stk, &var1);
                 printf("%lf\n", var1);
                 ip++;
-                printf("next cmd is %c\n", code[ip]);
+                //printf("next cmd is %c\n", code[ip]);
                 break;
             case DUMP:
                 dump(stk, LOG, 0);
@@ -159,8 +163,8 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                 //printf("%d\n", ip);
                 ip = *((int*)(code + ip));
                 //printf("%d\n", ip);
-                printf("%c\n", code[ip]);
-                sleep(1);
+                //printf("%c\n", code[ip]);
+                //sleep(1);
                 break;
             case POP:
                 
@@ -198,13 +202,13 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                         regs[code[ip++]] = var1;
                 }
                 //stack_push(stk, val);
-                printf("popping[%lf]\n", var1);
+                //printf("popping[%lf]\n", var1);
                 break;
             case DUP:
                 stack_pop(stk, &var1);
                 stack_push(stk, var1);
                 stack_push(stk, var1);
-                printf("duplicating %lf\n", var1);
+                //printf("duplicating %lf\n", var1);
                 ip++;
                 break;
             case CALL:
@@ -217,7 +221,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                 ip = *((int*)(code + ip));
                 //printf("%d\n", ip);
                 //printf("%c\n", code[ip]);
-                printf("calling function\n");
+                //printf("calling function\n");
                 //sleep(1);
                 break;
             case RET:
@@ -315,7 +319,7 @@ int code_read( char** code, FILE* input, size_t* size){
 int check_synt( char* str) {
     
     if ( !str ) {
-        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT IN CHECK_SYNT!!!!\n");
+        printf("ERROR WASN'T INPUTED IN CHECK_SYNT!!!!\n");
         return -1;
     }
 
@@ -333,7 +337,7 @@ int check_synt( char* str) {
 int skip_comments(char *str) {
     
     if ( !str ) {
-        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT IN SKIP_COMMENTS!!!!\n");
+        printf("ERROR WASN'T INPUTED IN SKIP_COMMENTS!!!!\n");
         return -1;
     }
 
@@ -352,7 +356,7 @@ int skip_comments(char *str) {
 int skip_sqares(char *str) {
     
     if ( !str ) {
-        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT IN SKIP_SQUARES!!!!\n");
+        printf("ERROR WASN'T INPUTED IN SKIP_SQUARES!!!!\n");
         return -1;
     }
 
@@ -382,6 +386,12 @@ void arr_print(char* arr, size_t size) {
 
 enum CMD command_verify ( char* command) {
     
+    if ( !command ){
+
+        printf("ERROR, COMAND_VERIFY NULL PTR\n");
+        return NUN;
+    }
+
     if ( !stricmp(command, "PUSH\0")) return PUSH;
     if ( !stricmp(command, "ADD\0")) return ADD;
     if ( !stricmp(command, "SUB\0")) return SUB;
@@ -424,6 +434,12 @@ enum CMD code_verify ( el_type code) {
 
 enum REGS register_verify ( char* buf ) {
 
+    if ( !buf ){
+
+        printf("ERROR, NULL PTR IN REG_VERIFY\n");
+        return REG_NUN;
+    }
+
     if ( !stricmp(buf, "rax\0")) return rax;
     if ( !stricmp(buf, "rbx\0")) return rbx;
     if ( !stricmp(buf, "rcx\0")) return rcx;
@@ -435,7 +451,7 @@ enum REGS register_verify ( char* buf ) {
 int labels_ctor(label** marks, size_t MARKS_SIZE){
     
     if(!marks) {
-        printf("MAKRS HAVE NULL PTR TI CHO EBLAN&\n");
+        printf("MAKRS HAVE NULL PTR IN LABEL_CTOR\n");
         return -1;
     }
     *marks = (label*)calloc(sizeof(label), MARKS_SIZE);
@@ -449,7 +465,7 @@ int labels_ctor(label** marks, size_t MARKS_SIZE){
 int labels_dtor(label* marks){
     
     if(!marks) {
-        printf("MAKRS HAVE NULL PTR TI CHO EBLAN&\n");
+        printf("MAKRS HAVE NULL PTR IN LABEL_DTOR\n");
         return -1;
     }
     for(size_t i = 0; i < MARKS_SIZE; i++) {
@@ -461,6 +477,13 @@ int labels_dtor(label* marks){
 }
 
 int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line) {
+    
+    if( !cmd || !marks ){
+
+        printf("ERROR, NULL PTR IN ANALYSE_VERIFY\n");
+        return -1;
+    }
+
     skip_comments(cmd);
     //cmd = skip_spaces(cmd); don't work!
     
@@ -469,7 +492,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
     int cmd_len = strlen(cmd);
     char *command = (char*)calloc(sizeof(char), MAX_LINE);
 
-    if ( !command ) return ALLOC_ERR;
+    if ( !command ) return -1;
     //printf("scanning\n");
     //printf("command_ptr[%p], cmd_ptr[%p]\n", (void*)command, (void*)*cmd);
     if ( cmd_len > MAX_LINE) {
@@ -504,6 +527,11 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
             offset2 = skip_sqares(cmd + offset);
             offset += skip_spaces(cmd + offset + offset2);
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
             if ( offset2 == 0){
                 if (sscanf(cmd + offset + offset2, "%s", check_reg)) {
                     //printf("%s\n", check_reg);
@@ -546,7 +574,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
 
                     if ( cmd[offset] != '+' ) {
                         printf("%s\n", cmd + offset);
-                        printf("SYNRAX ERROR, UNNOWN CONSTRACTION USING RAM HUESOS\n");
+                        printf("SYNRAX ERROR, UNNOWN CONSTRACTION USING RAM\n");
                         free(check_reg);  
                         return -1;
                     }
@@ -643,6 +671,12 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
             
             if ( sscanf(cmd + JMP_S + offset, "%d", &mark)) return sizeof(char) + sizeof(int);
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
             if ( sscanf( cmd + JMP_S + offset, "%s", check_reg)){
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
@@ -653,6 +687,12 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
         case JA:
 
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
             if ( sscanf( cmd + JA_S + offset, "%s", check_reg)){
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
@@ -663,6 +703,12 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
         case JB:
         
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
             if ( sscanf( cmd + JB_S + offset, "%s", check_reg)){
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
@@ -673,6 +719,13 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
         case JAE:
         
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
+
             if ( sscanf( cmd + JAE_S + offset, "%s", check_reg)){
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
@@ -683,6 +736,13 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
         case JBE:
         
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
+
             if ( sscanf( cmd + JBE_S + offset, "%s", check_reg)){
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
@@ -693,6 +753,13 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
         case JE:
         
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
+
             if ( sscanf( cmd + JE_S + offset, "%s", check_reg)){
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
@@ -703,6 +770,13 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
         case JNE:
         
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
+
             if ( sscanf( cmd + JNE_S + offset, "%s", check_reg)){
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
@@ -713,6 +787,13 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
         case CALL:
         
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
+
             if ( sscanf( cmd + CALL_S + offset, "%s", check_reg)){
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
@@ -735,6 +816,13 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
             return 1;
         case MARK:
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
+
             if (sscanf(cmd + MARK_S + offset, "%s", check_reg)) {
                 
                 for(size_t i = 0 ; i < marks_size; i++) {
@@ -764,6 +852,13 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
             offset2 = skip_sqares(cmd + offset);
             offset += skip_spaces(cmd + offset + offset2);
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+            if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN ANALYSE_VERIFY\n");    
+                return -1;
+            }
+
             if ( offset2 == 0){
                 if (sscanf(cmd + offset + offset2, "%s", check_reg)) {
                     //printf("%s\n", check_reg);
@@ -872,6 +967,11 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
 
 int cmd_analyse(char** cmd, size_t cmd_size, label* marks, size_t marks_size) {
 
+    if(!cmd || !marks) {
+        printf("ERROR, NULL PTR IN CMD_ANALYSE");
+        return 0;
+    }
+
     int sum = 0;
     int tmp = 0;
 
@@ -892,6 +992,11 @@ int cmd_analyse(char** cmd, size_t cmd_size, label* marks, size_t marks_size) {
 }
 
 int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_t marks_size){
+    
+    if( !cmd || !ip || !marks || !arr) {
+        printf("ERROR, NULL PTR IN GET_ARGS\n");
+        return -1;
+    }
 
     size_t tmp_ip = *ip;
 
@@ -915,6 +1020,13 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
             return 0;
         }
         check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+        if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN GET_ARGS\n");    
+                return -1;
+            }
+
         offset += skip_spaces(cmd);
         if ( ( cmd[offset] == '[' ) ){
             offset += 1;
@@ -1012,6 +1124,12 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
 
         check_reg = (char*)calloc(sizeof(char), MAX_LINE);
 
+         if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN GET_ARGS\n");    
+                return -1;
+        }
+
         if (sscanf(cmd, "%s", check_reg)) {
             
             arr[tmp_ip++] = JMP;
@@ -1057,6 +1175,14 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
             return 0;
         }
         check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+         if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN GET_ARGS\n");    
+                return -1;
+        }
+
+
         offset += skip_spaces(cmd);
         if ( ( cmd[offset] == '[' ) ){
             offset += 1;
@@ -1137,6 +1263,14 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
 
 
         check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+         if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN GET_ARGS\n");    
+                return -1;
+        }
+
+
         if (sscanf(cmd, "%s", check_reg)){
             int check_reg_offset = skip_sqares(check_reg);
             if (check_reg_offset != 0) arr[tmp_ip] = cmd_code + RAM_FLAG;
@@ -1174,6 +1308,13 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
 
         check_reg = (char*)calloc(sizeof(char), MAX_LINE);
 
+         if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN GET_ARGS\n");    
+                return -1;
+        }
+
+
         if (sscanf(cmd, "%s", check_reg)) {
             
             arr[tmp_ip++] = cmd_code;
@@ -1202,6 +1343,12 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
     if (cmd_code == CALL ) {
 
         check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+
+         if ( !check_reg ){ 
+
+                printf("ALLOCATION ERROR IN GET_ARGS\n");    
+                return -1;
+        }
 
         if (sscanf(cmd, "%s", check_reg)) {
             

@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
         free(code);
         return -1;
     }
-    printf("we are here\n");
+    //printf("we are here\n");
     fclose(input);
     free(code);
     return 0;
