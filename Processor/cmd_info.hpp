@@ -215,6 +215,14 @@ DEF_CMD(JNE, 19, 3, 1,
                 break;  
 
 )
+DEF_CMD(IN, 20, 2, 0,
+                ip++;
+                scanf("%lf", &var1);
+                while(getchar()!='\n'){}//printf("inputed!\n");
+                stack_push(stk, var1);
+                break;
+)
+
 DEF_CMD(NUN, 0x1F, 1488, 0, break;
                             
 )

@@ -1,0 +1,126 @@
+IN;
+pop rax ;a
+IN
+pop rbx ;b
+IN
+pop rcx ;c
+call :quad_solv
+hlt
+:quad_solv
+push rax
+push 0
+je :linear
+push rax
+push rbx
+push rcx
+push -4
+mul
+pop rax
+dup
+dup
+mul
+pop rbx
+pop rcx
+dup
+push rax
+mul
+push rbx
+add
+dup
+push 0
+jb :end ; 1 9-4ac rcx 3 
+POP rax ; 1 rax 9-4ac rcx 3
+POP  rbx 
+push rax
+push 0
+call :sqrt
+push rdx  ; 1 rax 9-4ac rcx 3 rdx disc
+push rcx
+push -1
+mul
+push rdx
+add
+push rbx
+push 2
+mul
+div
+out
+push rdx  ; 1 rax 9-4ac rcx 3 rdx disc
+push rcx
+push -1
+mul
+push rdx
+sub
+push rbx
+push 2
+mul
+div      
+out
+ret
+:end
+push nan
+out
+ret
+;hui
+:sqrt
+push rax 
+push 0
+je :zero
+push 1;jopa
+pop rdx
+push 1
+:cycle
+push rax
+push rdx
+div 
+push rdx
+add;huihuihui
+push 2
+div
+pop rdx
+push 1
+add
+dup
+push 10
+jb :cycle
+ret
+:zero
+push rax
+pop rdx
+ret
+:error
+push 1337
+out
+ret
+:linear
+; a = 0 rax may be free
+push rbx
+push 0
+je :sc
+push rcx
+push 0
+push rbx
+sub
+div
+dup
+PUSH 0
+je :l_zero 
+out
+ret
+
+:l_zero
+push 0
+out
+ret
+
+:sc
+push rcx
+push 0
+jne :l_end
+push inf
+out
+ret
+:l_end 
+push nan
+out
+ret

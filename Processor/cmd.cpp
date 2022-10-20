@@ -177,6 +177,7 @@ enum CMD command_verify ( char* command) {
     if ( !stricmp(command, "JNE\0")) return JNE;
     if ( !stricmp(command, "CALL\0")) return CALL;
     if ( !stricmp(command, "RET\0")) return RET;
+    if ( !stricmp(command, "IN\0")) return IN;
     if ( command[0] == ':') return MARK;
     if ( !stricmp(command, "POP\0")) return POP;
     if ( !stricmp(command, "OUT\0")) return OUT;
@@ -198,6 +199,7 @@ enum CMD code_verify ( el_type code) {
     if (code == DUP) return DUP;
     if (code == JMP) return JMP;
     if( code == DUMP) return DUMP;
+    if (code == IN) return IN;
     if( code == HLT) return HLT;
 
     return NUN;
@@ -582,6 +584,12 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line
         case HLT:
             if ( check_synt(cmd + HLT_S)== -1){
                     printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER HLT %d\n", line);   
+                    return -1;
+            }
+            return 1;
+        case IN:
+            if ( check_synt(cmd + IN_S)== -1){
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER IN %d\n", line);   
                     return -1;
             }
             return 1;
