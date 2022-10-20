@@ -24,6 +24,11 @@ int is_equal(el_type var1, el_type var2) {
     return 1;
 
 }
+//#define COMMA ,
+#define DEF_CMD(name, num, length, arg, exec_code)\
+    case num:\
+    exec_code
+
 
 int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type* ram, size_t ram_size, el_type *regs ) {
 
@@ -40,243 +45,9 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
         var1 = 0;
         var2 = 0;
         val = 0;
-        //printf("command is%0x %0x \n", code[ip], code[ip] & CMD_BYTES);
+
         switch (code[ip] & CMD_BYTES){
-            
-            case PUSH:
-                //printf("pushing!\n");
-                
-                if( code[ip] & RAM_FLAG ){
-                    int arg = 0;
-                    int tmp_ip = ip + 1;
-                    if (code[ip] & IMMED_FLAG) {
-                        //tmp_ip++;
-                    
-                        arg += *(int*)(code + tmp_ip);
-
-                        tmp_ip += sizeof(int);
-                       // val = ram[arg];
-                        //stack_push(stk, val);
-                        //printf("pushing[%lf]\n", val);
-                        //break;
-                        //printf("RAM %lf\n", ram[arg]);
-                    }
-
-                    if ( code[ip] & REG_FLAG ) {
-                        //ip++;
-                        arg += (int)regs[code[tmp_ip++]];
-                        //printf("arg is %d\n", arg);
-                        //val = ram[arg];
-                        //printf("pushing[%lf]\n", val);
-                        //printf("RAM %lf\n", ram[arg]); 
-                       // stack_push(stk, val);
-                        //printf("pushing[%lf]\n", val);
-                        //break;
-                    }
-                    ip = tmp_ip;
-                    val = ram[arg];
-                    stack_push(stk, val);
-                    break;
-                    
-                }
-                //printf("wtf %0x \n", code[ip] & REG_FLAG);
-                if ( code[ip] & REG_FLAG ) {
-                        ip++;
-                        int arg = (int)code[ip++];
-                        val = regs[arg];
-                        stack_push(stk, val);
-                        //printf("pushing[%lf]\n", val);
-                        break;
-                }
-                //printf("wtf %0x \n", code[ip] & IMMED_FLAG);
-                if (code[ip] & IMMED_FLAG) {
-                    ip++;
-                    val = *(el_type*)(code + ip);
-                    ip += sizeof(el_type);
-                    stack_push(stk, val);
-                    //printf("pushing[%lf]\n", val);
-                    break;
-                }
-                stack_push(stk, val);
-            //printf("pushing[%lf]\n", val);
-                break;
-            case ADD:
-
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                //printf("add var1[%lf]  var2[%lf]\n", var1, var2);
-                stack_push(stk, var1 + var2);
-                ip++;
-                break;
-            case SUB:
-
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                //printf("sub var1[%lf]  var2[%lf]\n", var1, var2);
-                stack_push(stk, var2 - var1);
-                ip++;
-                break;
-            case MUL:
-                
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                //printf("mul var1[%lf]  var2[%lf]\n", var1, var2);
-                stack_push(stk, var1*var2);
-                ip++;
-                break;
-            case DIV:
-
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                if ( !is_equal( var1, 0 ) ){
-                    printf("EXECUTING ERROR, DIVISION BY ZERO\n");
-                    stack_dtor(stk);
-                    stack_dtor(stk_addr);
-                    return -1;
-                }
-                //printf("div var1[%lf]  var2[%lf]\n", var1, var2);
-                stack_push(stk, var2 / var1);
-                ip++;
-                break;
-            case OUT:
-                
-                stack_pop(stk, &var1);
-                printf("%lf\n", var1);
-                ip++;
-                //printf("next cmd is %c\n", code[ip]);
-                break;
-            case DUMP:
-                dump(stk, LOG, 0);
-                printf("dumping...\n");
-                //dump_cpu(code, ip);
-                ip++;
-                break;
-            case HLT:
-                
-                stack_dtor(stk);
-                stack_dtor(stk_addr);
-                printf("stack destroied\n");
-                return 0;
-                break;
-            case JMP:
-                ip++;
-                //printf("%d\n", ip);
-                ip = *((int*)(code + ip));
-                //printf("%d\n", ip);
-                //printf("%c\n", code[ip]);
-                //sleep(1);
-                break;
-            case POP:
-                
-                stack_pop(stk, &var1);
-
-                if( code[ip] & RAM_FLAG ){
-                    int arg = 0;
-                    int tmp_ip = ip + 1;
-
-                    if (code[ip] & IMMED_FLAG) {
-                        
-                        arg += *(int*)(code + tmp_ip);
-                        tmp_ip += sizeof(int);
-                        //ram[arg] = var1;
-                        //printf("RAM %lf\n", ram[arg]);
-                        //printf("next cmd is %0x\n", code[ip]);
-                    }
-
-                    if ( code[ip] & REG_FLAG ) {
-                        
-                        arg += (int)regs[code[tmp_ip++]];
-                        //printf("arg is %d\n", arg);
-                        //ram[arg] = var1; 
-                        //printf("RAM %lf\n", ram[arg]);
-                        //printf("next cmd is %0x\n", code[ip]);
-                    }
-                    ip = tmp_ip;
-                    ram[arg] = var1;
-
-                    break;
-                }
-
-                if ( code[ip] & REG_FLAG ) {
-                        ip++;
-                        regs[code[ip++]] = var1;
-                }
-                //stack_push(stk, val);
-                //printf("popping[%lf]\n", var1);
-                break;
-            case DUP:
-                stack_pop(stk, &var1);
-                stack_push(stk, var1);
-                stack_push(stk, var1);
-                //printf("duplicating %lf\n", var1);
-                ip++;
-                break;
-            case CALL:
-                ip++;
-                //printf("%d\n", ip);
-                tmp = ip + sizeof(int);
-                memcpy(&val,&tmp, sizeof(int));
-                //printf("%d", val);
-                stack_push(stk_addr, val);
-                ip = *((int*)(code + ip));
-                //printf("%d\n", ip);
-                //printf("%c\n", code[ip]);
-                //printf("calling function\n");
-                //sleep(1);
-                break;
-            case RET:
-                
-                stack_pop(stk_addr, &val);
-                memcpy(&ip, &val, sizeof(int));
-                break;
-            case JB:
-
-                ip++;
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                if ( (var2 - var1) < 0  && is_equal(var1, var2) ) ip = *(int*)(code + ip);
-                else ip += sizeof(int);
-                break;
-            case JBE:
-
-                ip++;
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                if ( (var2 - var1) <= 0 || !is_equal(var1, var2)) ip = *(int*)(code + ip);
-                else ip += sizeof(int);
-                break;    
-            case JA:
-
-                ip++;
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                if ( (var2 - var1) > 0 && is_equal(var1, var2)) ip = *(int*)(code + ip);
-                else ip += sizeof(int);
-                break;
-            case JAE:
-
-                ip++;
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                if ( (var2 - var1) >= 0 ||!is_equal(var1, var2) ) ip = *(int*)(code + ip);
-                else ip += sizeof(int);
-                break;
-            case JE:
-
-                ip++;
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                if ( (var2 - var1) == 0 || !is_equal(var1, var2 )) ip = *(int*)(code + ip);
-                else ip += sizeof(int);
-                break;
-            case JNE:
-
-                ip++;
-                stack_pop(stk, &var1);
-                stack_pop(stk, &var2);
-                if ( (var2 - var1) != 0 && is_equal(var1, var2) ) ip = *(int*)(code + ip);
-                else ip += sizeof(int);
-                break;  
+            #include "cmd_info.hpp"  
             default:
                 printf("UNKNOWN COMMAND\n");
                 stack_dtor(stk);
@@ -289,7 +60,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
     stack_dtor(stk_addr);
     return 0;
 }
-
+#undef DEF_CMD
 
 int code_read( char** code, FILE* input, size_t* size){
 
@@ -1100,9 +871,10 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
             //printf("here may be problem %s\n", check_reg + check_reg_offset);
 
         }
+        //printf("check reg is %s\n cmd is %s\n", check_reg, cmd);
         free(check_reg);
 
-        printf("SYNTAX ERROR, PUSH HAS WRONG ARG tititi\n");
+        printf("SYNTAX ERROR, PUSH HAS WRONG ARG \n");
         return -1;
                 
     }
@@ -1258,7 +1030,7 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
         }
         free(check_reg);
 
-        printf("SYNTAX ERROR, PUSH HAS WRONG ARG tititi\n");
+        printf("SYNTAX ERROR, POP HAS WRONG ARG \n");
         return -1;
 
 
@@ -1382,7 +1154,19 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
     return -1;
 }
     
-
+#define DEF_CMD(name, num, length, arg, ...)\
+    case num:\
+        if (num == MARK) break;\
+        if (arg == 1 ) {\
+            if ( get_args(cmd[i] + offset + length, num, &ip, marks, arr, marks_size) == -1) {\
+                            printf ("GETtTING ARGS ERROR\n");\
+                            free(command);\
+                            return -1;\
+                        }\
+                        break;\
+        }\
+            arr[ip++] = cmd_code;\
+            break;
 
 int assamble(char** cmd, size_t cmd_size, label* marks, char* arr, size_t marks_size) {
 
@@ -1399,88 +1183,8 @@ int assamble(char** cmd, size_t cmd_size, label* marks, char* arr, size_t marks_
             if( (cmd_code = command_verify(command)) != NUN ) {
                 
                 switch(cmd_code){
-                    case PUSH:
-                        
-                        if ( get_args(cmd[i] + offset + PUSH_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case JMP:
-                        
-                        if ( get_args(cmd[i] + offset + JMP_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case POP:
-                        
-                        if ( get_args(cmd[i] + offset + POP_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case JB:
-                        
-                        if ( get_args(cmd[i] + offset + JB_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case JBE:
-                        
-                        if ( get_args(cmd[i] + offset + JBE_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case JA:
-                        
-                        if ( get_args(cmd[i] + offset + JA_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case JAE:
-                        
-                        if ( get_args(cmd[i] + offset + JAE_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case JE:
-                        
-                        if ( get_args(cmd[i] + offset + JE_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case JNE:
-                        
-                        if ( get_args(cmd[i] + offset + JNE_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case CALL:
 
-                        if ( get_args(cmd[i] + offset + CALL_S, cmd_code, &ip, marks, arr, marks_size) == -1) {
-                            printf ("GETtTING ARGS ERROR\n");
-                            free(command);
-                            return -1;
-                        }
-                        break;
-                    case MARK:
-                        break;
+                    #include "cmd_info.hpp"
                     default:
                         arr[ip++] = cmd_code;
 
@@ -1495,3 +1199,5 @@ int assamble(char** cmd, size_t cmd_size, label* marks, char* arr, size_t marks_
     return 0;
 
 }
+
+#undef DEF_CMD

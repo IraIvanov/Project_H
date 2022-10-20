@@ -6,54 +6,20 @@
 
 #ifndef CMD_H_INCLUDED
 #define CMD_H_INCLUDED
-
+#define DEF_CMD(name, num, length, arg, exec_code)\
+    name = num,
 enum CMD {
-    HLT  = 0,
-    PUSH = 1,
-    ADD  = 2,
-    SUB  = 3,
-    MUL  = 4,
-    DIV  = 5,
-    OUT  = 6,
-    DUMP = 7,
-    JMP  = 8,
-    MARK = 9,
-    POP  = 10,
-    DUP  = 11,
-    CALL = 12,
-    RET  = 13,
-    JB   = 14,
-    JBE  = 15,
-    JA   = 16,
-    JAE  = 17,
-    JE   = 18,
-    JNE  = 19,
-    NUN  = 0x1F,
+    #include "cmd_info.hpp"
 };
+#undef DEF_CMD
+
+#define DEF_CMD(name, num, length, arg, exec_code)\
+    name##_S = length,
 
 enum CMD_SIZE {
-    HLT_S  = 3,
-    PUSH_S = 4,
-    ADD_S  = 3,
-    SUB_S  = 3,
-    MUL_S  = 3,
-    DIV_S  = 3,
-    OUT_S  = 3,
-    DUMP_S = 4,
-    JMP_S  = 3,
-    POP_S  = 3,
-    MARK_S = 1,
-    DUP_S  = 3,
-    CALL_S = 4,
-    RET_S  = 3,
-    JB_S   = 2,
-    JBE_S  = 3,
-    JA_S   = 2,
-    JAE_S  = 3,
-    JE_S   = 2,
-    JNE_S  = 3,
-    NUN_S  = 1488,
+    #include "cmd_info.hpp"
 };
+#undef DEF_CMD
 
 typedef struct label_t {
     int line;
@@ -80,7 +46,7 @@ enum flags {
 
 #define SIGNATURE "SP"
 
-const char VERSION = 2;
+const char VERSION = 3;
 const size_t MIN_STACK_SIZE = 64;
 const size_t MARKS_SIZE = 256; 
 const size_t MAX_CMD_SIZE = 5;
