@@ -40,7 +40,14 @@ int cmd_get(char *code, char***cmd, size_t* size, size_t code_size) {
 
     size_t cmd_size = 0;
 
-    for(size_t i = 0; i < code_size; i++) {
+    size_t offset = 0;
+
+    while(isspace(code[offset])) offset++;
+
+    //printf("%lu\n", offset);
+
+
+    for(size_t i = offset; i < code_size; i++) {
 
         if(code[i] == '\n'){
 
@@ -56,13 +63,13 @@ int cmd_get(char *code, char***cmd, size_t* size, size_t code_size) {
     if ( !cmd ) return CMD_ALLOC_ERR;
 
     *size = cmd_size;
-    size_t cmd_place = 0, cmd_i = 0;
+    size_t cmd_place = offset, cmd_i = 0;
 
-    for(size_t i = 0; code[i] != '\0'; i++) { 
+    for(size_t i = offset; code[i] != '\0'; i++) { 
 
         if ( code[i] == '\n') {
             code[i++] = '\0';
-            while(code[i] == '\n' && code[i+1]!= '\0') i++;
+            while(isspace(code[i]) && code[i+1]!= '\0') i++;
             (*cmd)[cmd_i] = code + cmd_place;
             cmd_place = i;
             cmd_i++;
@@ -74,8 +81,10 @@ int cmd_get(char *code, char***cmd, size_t* size, size_t code_size) {
     return 0;
 }
 
-void cmd_print(char** cmd, size_t cmd_size){
+int cmd_print(char** cmd, size_t cmd_size){
     
+    if ( !cmd ) return CMD_NULL_PTR;
+
     for(size_t i = 0; i < cmd_size; i++) {
         /*for(size_t j = 0; cmd[i][j] != '\n'; j++){
             printf("%c", cmd[i][j]);
@@ -83,7 +92,7 @@ void cmd_print(char** cmd, size_t cmd_size){
         printf("%s", cmd[i]);
         printf("\n");
     }
-    return;
+    return 0;
 }
 
 int stricmp(const char* str1, const char* str2) {
@@ -97,4 +106,12 @@ int stricmp(const char* str1, const char* str2) {
     }
 
     return 0;
+}
+
+int skip_spaces(char *str){
+    
+    int i = 0;
+    while( str[i] != '\0' && isspace(str[i])) i++;
+
+    return i;
 }

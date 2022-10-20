@@ -17,7 +17,6 @@ int main(int argc, char *argv[]) {
     if ( !input ) {
 
         fprintf(stderr, "\x1b[31m ERROR WHILE READING THE FILE \x1b[0m\n");
-        fclose(input);
         return -1;
 
     }

@@ -102,7 +102,7 @@ enum CMD code_verify ( el_type code);
 //void dump_proc(el_type* code, )
 enum REGS register_verify ( char* buf );
 
-int analyse_verify( char* cmd, label* marks, size_t marks_size, int line);
+int analyse_verify( char* cmd, label* marks, size_t marks_size,int ip, int line);
 
 int cmd_analyse(char** cmd, size_t cmd_size, label* marks, size_t marks_size);
 

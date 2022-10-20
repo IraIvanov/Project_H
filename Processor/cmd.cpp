@@ -10,8 +10,6 @@
     SKIP REPLACE WITH TWO FUNC'S SKIP COMMENTS AND CHECK_SYNT
     ADD NAMED LABELS 
     ADD RAM AND JMP'S
-
-
 */
 #include <math.h>
 
@@ -45,26 +43,36 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                 //printf("pushing!\n");
                 
                 if( code[ip] & RAM_FLAG ){
-                    if ( code[ip] & REG_FLAG ) {
-                        ip++;
-                        int arg = (int)regs[code[ip++]];
-                        val = ram[arg];
-                        //printf("pushing[%lf]\n", val);
-                        //printf("RAM %lf\n", ram[arg]); 
-                        stack_push(stk, val);
-                        //printf("pushing[%lf]\n", val);
-                        break;
-                    }
+                    int arg = 0;
+                    int tmp_ip = ip + 1;
                     if (code[ip] & IMMED_FLAG) {
-                        ip++;
-                        int arg = *(int*)(code + ip);
-                        ip += sizeof(int);
-                        val = ram[arg];
-                        stack_push(stk, val);
+                        //tmp_ip++;
+                    
+                        arg += *(int*)(code + tmp_ip);
+
+                        tmp_ip += sizeof(int);
+                       // val = ram[arg];
+                        //stack_push(stk, val);
                         //printf("pushing[%lf]\n", val);
-                        break;
+                        //break;
                         //printf("RAM %lf\n", ram[arg]);
                     }
+
+                    if ( code[ip] & REG_FLAG ) {
+                        //ip++;
+                        arg += (int)regs[code[tmp_ip++]];
+                        //printf("arg is %d\n", arg);
+                        //val = ram[arg];
+                        //printf("pushing[%lf]\n", val);
+                        //printf("RAM %lf\n", ram[arg]); 
+                       // stack_push(stk, val);
+                        //printf("pushing[%lf]\n", val);
+                        //break;
+                    }
+                    ip = tmp_ip;
+                    val = ram[arg];
+                    stack_push(stk, val);
+                    break;
                     
                 }
                 //printf("wtf %0x \n", code[ip] & REG_FLAG);
@@ -73,7 +81,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                         int arg = (int)code[ip++];
                         val = regs[arg];
                         stack_push(stk, val);
-                        //printf("pushing[%lf]\n", val);
+                        printf("pushing[%lf]\n", val);
                         break;
                 }
                 //printf("wtf %0x \n", code[ip] & IMMED_FLAG);
@@ -82,17 +90,17 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                     val = *(el_type*)(code + ip);
                     ip += sizeof(el_type);
                     stack_push(stk, val);
-                    //printf("pushing[%lf]\n", val);
+                    printf("pushing[%lf]\n", val);
                     break;
                 }
                 stack_push(stk, val);
-                //printf("pushing[%lf]\n", val);
+            printf("pushing[%lf]\n", val);
                 break;
             case ADD:
 
                 stack_pop(stk, &var1);
                 stack_pop(stk, &var2);
-                //printf("add var1[%lf]  var2[%lf]\n", var1, var2);
+                printf("add var1[%lf]  var2[%lf]\n", var1, var2);
                 stack_push(stk, var1 + var2);
                 ip++;
                 break;
@@ -100,7 +108,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
 
                 stack_pop(stk, &var1);
                 stack_pop(stk, &var2);
-                //printf("sub var1[%lf]  var2[%lf]\n", var1, var2);
+                printf("sub var1[%lf]  var2[%lf]\n", var1, var2);
                 stack_push(stk, var2 - var1);
                 ip++;
                 break;
@@ -108,7 +116,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                 
                 stack_pop(stk, &var1);
                 stack_pop(stk, &var2);
-                //printf("mul var1[%lf]  var2[%lf]\n", var1, var2);
+                printf("mul var1[%lf]  var2[%lf]\n", var1, var2);
                 stack_push(stk, var1*var2);
                 ip++;
                 break;
@@ -122,7 +130,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                     stack_dtor(stk_addr);
                     return -1;
                 }
-                //printf("div var1[%lf]  var2[%lf]\n", var1, var2);
+                printf("div var1[%lf]  var2[%lf]\n", var1, var2);
                 stack_push(stk, var2 / var1);
                 ip++;
                 break;
@@ -131,7 +139,7 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                 stack_pop(stk, &var1);
                 printf("%lf\n", var1);
                 ip++;
-                //printf("next cmd is %c\n", code[ip]);
+                printf("next cmd is %c\n", code[ip]);
                 break;
             case DUMP:
                 dump(stk, LOG, 0);
@@ -151,41 +159,52 @@ int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type*
                 //printf("%d\n", ip);
                 ip = *((int*)(code + ip));
                 //printf("%d\n", ip);
-                //printf("%c\n", code[ip]);
+                printf("%c\n", code[ip]);
                 sleep(1);
                 break;
             case POP:
                 
                 stack_pop(stk, &var1);
 
-                if( code[ip] & 0x80 ){
-                    if ( code[ip] & 0x40 ) {
-                        ip++;
-                        char arg = regs[code[ip++]];
-                        ram[arg] = var1; 
+                if( code[ip] & RAM_FLAG ){
+                    int arg = 0;
+                    int tmp_ip = ip + 1;
+
+                    if (code[ip] & IMMED_FLAG) {
+                        
+                        arg += *(int*)(code + tmp_ip);
+                        tmp_ip += sizeof(int);
+                        //ram[arg] = var1;
                         //printf("RAM %lf\n", ram[arg]);
+                        //printf("next cmd is %0x\n", code[ip]);
                     }
-                    if (code[ip] & 0x20) {
-                        ip++;
-                        int arg = *(int*)(code + ip);
-                        ip += sizeof(int);
-                        ram[arg] = var1;
+
+                    if ( code[ip] & REG_FLAG ) {
+                        
+                        arg += (int)regs[code[tmp_ip++]];
+                        //printf("arg is %d\n", arg);
+                        //ram[arg] = var1; 
                         //printf("RAM %lf\n", ram[arg]);
+                        //printf("next cmd is %0x\n", code[ip]);
                     }
+                    ip = tmp_ip;
+                    ram[arg] = var1;
+
+                    break;
                 }
 
-                if ( code[ip] & 0x40 ) {
+                if ( code[ip] & REG_FLAG ) {
                         ip++;
                         regs[code[ip++]] = var1;
                 }
                 //stack_push(stk, val);
-                //printf("popping[%lf]\n", var1);
+                printf("popping[%lf]\n", var1);
                 break;
             case DUP:
                 stack_pop(stk, &var1);
                 stack_push(stk, var1);
                 stack_push(stk, var1);
-                //printf("duplicating %lf\n", var1);
+                printf("duplicating %lf\n", var1);
                 ip++;
                 break;
             case CALL:
@@ -296,7 +315,7 @@ int code_read( char** code, FILE* input, size_t* size){
 int check_synt( char* str) {
     
     if ( !str ) {
-        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT !!!!\n");
+        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT IN CHECK_SYNT!!!!\n");
         return -1;
     }
 
@@ -314,7 +333,7 @@ int check_synt( char* str) {
 int skip_comments(char *str) {
     
     if ( !str ) {
-        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT !!!!\n");
+        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT IN SKIP_COMMENTS!!!!\n");
         return -1;
     }
 
@@ -333,7 +352,7 @@ int skip_comments(char *str) {
 int skip_sqares(char *str) {
     
     if ( !str ) {
-        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT !!!!\n");
+        printf("ERROR WASN'T INPUTED TI CHO EBLAN BLYAT IN SKIP_SQUARES!!!!\n");
         return -1;
     }
 
@@ -441,13 +460,25 @@ int labels_dtor(label* marks){
     return 0;
 }
 
-int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
+int analyse_verify( char* cmd, label* marks, size_t marks_size, int ip, int line) {
     skip_comments(cmd);
+    //cmd = skip_spaces(cmd); don't work!
+    
+    //printf("bluh %s\n", cmd);
     if(cmd[0] == '\0') return 0;
+    int cmd_len = strlen(cmd);
     char *command = (char*)calloc(sizeof(char), MAX_LINE);
+
+    if ( !command ) return ALLOC_ERR;
     //printf("scanning\n");
     //printf("command_ptr[%p], cmd_ptr[%p]\n", (void*)command, (void*)*cmd);
+    if ( cmd_len > MAX_LINE) {
+        printf("ERROR, COMMAND LENGTH MORE THEN MAX_LINE CONST IN LINE %d\n", line);
+        return -1;
+    }
+
     sscanf(cmd, "%s", command);
+
     //printf("command[%s]\n", command);
     int offset = strstr(cmd, command) - cmd; 
     
@@ -460,77 +491,151 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
     int offset2 = 0;
     switch(command_num) {
         case PUSH:
-
-            if (sscanf(cmd + PUSH_S + offset, "%lf %n", &value, &offset2)) {
-                if ( check_synt(cmd + PUSH_S + offset + offset2)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION\n");   
+            offset += PUSH_S;
+            if (sscanf(cmd + offset, "%lf %n", &value, &offset2)) {
+                if ( check_synt(cmd + offset + offset2)== -1){
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION %d\n", line);   
                     return -1;
                 }
                 return sizeof(char) + sizeof(el_type);
-            }
+            }          
+
+            offset += skip_spaces(cmd + offset);
+            offset2 = skip_sqares(cmd + offset);
+            offset += skip_spaces(cmd + offset + offset2);
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
-            if (sscanf(cmd + PUSH_S + offset, "%s", check_reg)) {
-                int check_reg_offset = skip_sqares(check_reg);
-                //printf("%s\n", check_reg);
-                if( register_verify(check_reg + check_reg_offset) != REG_NUN ){
+            if ( offset2 == 0){
+                if (sscanf(cmd + offset + offset2, "%s", check_reg)) {
                     //printf("%s\n", check_reg);
-                    //printf("%s\n", cmd + MAX_CMD_SIZE + offset);
-                    free(check_reg);
-                    
-                    return 2;
-                }
-                if ( sscanf( check_reg + check_reg_offset, "%d %n", &num, &offset2) ) {
-                    //printf("we are here : %d is int\n", num);
-                    if ( check_synt(check_reg + check_reg_offset + offset2)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION\n");
+                    int check_reg_len = strlen(check_reg);
+                    if( register_verify(check_reg) != REG_NUN ){
+                        //printf("%s\n", check_reg);
+                        if ( check_synt(cmd + offset + offset2 + check_reg_len)== -1){
+                        printf("SYNRAX ERROR, UNNOWN CONSTRACTION USED REGISRETS %d\n", line);
+                        free(check_reg);  
+                        return -1;
+                    }
+                        free(check_reg);
+                        
+                        return 2;
+                    }
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION USED REGISTERS %d\n", line);
                     free(check_reg);  
                     return -1;
                 }
+            printf("SYNRAX ERROR, UNNOWN CONSTRACTION %d\n", line);
+            free(check_reg);  
+            return -1;
+            }
 
+            //offset += offset2;
+            //printf("%s\n", cmd + offset);
+            if ( sscanf( cmd + offset++ + offset2, "%d %n", &num, &offset2)) {
+                    //printf("we are here : %d is int\n", num);
+                    //printf("we are here : %s\n", cmd + offset + offset2);
+
+                    if ( check_synt(cmd + offset )== -1) {
+
+                    offset += offset2 + skip_spaces(cmd + offset + offset2);
+
+                    if ( cmd[offset] == '\0') {
+                        free(check_reg);
+                        return sizeof(char) + sizeof(int);
+                    }
+
+
+                    if ( cmd[offset] != '+' ) {
+                        printf("%s\n", cmd + offset);
+                        printf("SYNRAX ERROR, UNNOWN CONSTRACTION USING RAM HUESOS\n");
+                        free(check_reg);  
+                        return -1;
+                    }
+
+                    offset++;
+                    offset +=skip_spaces(cmd + offset);
+                    //printf("%s\n", cmd + offset);
+                    if (sscanf( cmd + offset, "%s", check_reg)) {
+                        if( register_verify(check_reg) != REG_NUN ){
+                        //printf("%s\n", check_reg);
+                        int check_reg_len = strlen(check_reg);
+                        if ( check_synt(cmd + offset + check_reg_len)== -1){
+                            //printf("%s\n", cmd + check_reg_len + offset);
+                            printf("SYNRAX ERROR, UNNOWN CONSTRACTION  USING RAM %d\n", line);
+                            free(check_reg);  
+                            return -1;
+                        }
+                            free(check_reg);
+                            
+                            return sizeof(char) + sizeof(char) + sizeof(int);
+                        }
+                        printf("SYNRAX ERROR, UNNOWN CONSTRACTION USING RAM %d\n", line);
+                        free(check_reg);  
+                        return -1;
+                    }
+                    
+                    printf("SYNRAX ERROR, GENERAL UNNOWN CONSTRACTION\n");
+                    free(check_reg);  
+                    return -1;
+                }
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
+            }
+
+            if (sscanf( cmd + offset, "%s", check_reg)) {
+                if( register_verify(check_reg) != REG_NUN ){
+                //printf("%s\n", check_reg);
+                int check_reg_len = strlen(check_reg);
+                if ( check_synt(cmd + offset + check_reg_len)== -1){
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION REGISTER AND RAM IN LINE %d\n", line);
+                    free(check_reg);  
+                    return -1;
                 }
-                printf("PUSH ERROR with registers or RAM\n");
-                free(check_reg);
+                    free(check_reg);
+                    
+                    return sizeof(char) + sizeof(char);
+                }
+                printf("%s\n", check_reg);
+                printf("SYNRAX ERROR, UNNOWN REGISTER NAME %d\n", line);
+                free(check_reg);  
                 return -1;
             }
-            printf("%s\n", cmd + PUSH_S + offset);
-            printf("PUSH ERROR\n");
-            free(check_reg);
+
+            printf("SYNRAX ERROR,GENERAL UNNOWN CONSTRACTION %d\n", line);
+            free(check_reg);  
             return -1;
         case ADD:
             if ( check_synt(cmd + ADD_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER ADD\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER ADD %d\n", line);   
                     return -1;
             }
             return 1;
         case SUB:
             if ( check_synt(cmd + SUB_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER SUB\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER SUB %d\n", line);   
                     return -1;
             }
             return 1;
         case MUL:
             if ( check_synt(cmd + MUL_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER MUL\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER MUL %d\n", line);   
                     return -1;
             }
             return 1;
         case DIV:
             if ( check_synt(cmd + DIV_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER DIV\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER DIV %d\n", line);   
                     return -1;
             }
             return 1;
         case OUT:
             if ( check_synt(cmd + OUT_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER OUT\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER OUT %d\n", line);   
                     return -1;
             }
             return 1;
         case DUMP:
             if ( check_synt(cmd + DUMP_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER DUMP\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER DUMP %d\n", line);   
                     return -1;
             }
             return 1;
@@ -542,7 +647,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
             }
-            printf("JUMP ERROR\n");
+            printf("JUMP ERROR %d\n", line);
             free(check_reg);
             return -1;
         case JA:
@@ -552,7 +657,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
             }
-            printf("JUMP ERROR\n");
+            printf("JUMP ERROR %d\n", line);
             free(check_reg);
             return -1;
         case JB:
@@ -562,7 +667,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
             }
-            printf("JUMP ERROR\n");
+            printf("JUMP ERROR %d\n", line);
             free(check_reg);
             return -1;
         case JAE:
@@ -572,7 +677,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
             }
-            printf("JUMP ERROR\n");
+            printf("JUMP ERROR %d\n", line);
             free(check_reg);
             return -1;
         case JBE:
@@ -582,7 +687,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
             }
-            printf("JUMP ERROR\n");
+            printf("JUMP ERROR %d\n", line);
             free(check_reg);
             return -1;
         case JE:
@@ -592,7 +697,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
             }
-            printf("JUMP ERROR\n");
+            printf("JUMP ERROR %d\n", line);
             free(check_reg);
             return -1;
         case JNE:
@@ -602,7 +707,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
             }
-            printf("JUMP ERROR\n");
+            printf("JUMP ERROR %d\n", line);
             free(check_reg);
             return -1;
         case CALL:
@@ -612,19 +717,19 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
             }
-            printf("CALL ERROR\n");
+            printf("CALL ERROR %d\n", line);
             free(check_reg);
             return -1;
         case RET:
 
             if ( check_synt(cmd + RET_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER RET\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER RET %d\n", line);   
                     return -1;
             }
             return 1;
         case HLT:
             if ( check_synt(cmd + HLT_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER HLT\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER HLT %d\n", line);   
                     return -1;
             }
             return 1;
@@ -635,7 +740,7 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 for(size_t i = 0 ; i < marks_size; i++) {
                     if( (marks[i]).line == -1 ) {
                         //printf("line %d", line);
-                        marks[i].line = line;
+                        marks[i].line = ip;
                         marks[i].name = check_reg;
                         return 0;
                     }
@@ -644,42 +749,122 @@ int analyse_verify( char* cmd, label* marks, size_t marks_size, int line) {
                 free(check_reg);
                 return -1;
             }
-            printf("LABEL ERROR, LABEL HAVE NO NAME\n");
+            printf("LABEL ERROR, LABEL HAVE NO NAME %d\n", line);
             free(check_reg);
             return -1;
         case DUP:
             if ( check_synt(cmd + DUP_S)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER DUP\n");   
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION, VALUE AFTER DUP %d\n", line);   
                     return -1;
             }
             return 1;
         case POP:
+            offset += POP_S;
+            offset += skip_spaces(cmd + offset);
+            offset2 = skip_sqares(cmd + offset);
+            offset += skip_spaces(cmd + offset + offset2);
             check_reg = (char*)calloc(sizeof(char), MAX_LINE);
-            if (sscanf(cmd + POP_S + offset, "%s", check_reg)){
-                int check_reg_offset = skip_sqares(check_reg);
-                if( register_verify(check_reg + check_reg_offset) != REG_NUN ) {
-                    free(check_reg);
-                    return 2;
-                }
-                 if ( sscanf( check_reg + check_reg_offset, "%d %n", &num, &offset2) ) {
-                    if ( check_synt(check_reg + check_reg_offset + offset2)== -1){
-                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION\n");
-                    free(check_reg);   
+            if ( offset2 == 0){
+                if (sscanf(cmd + offset + offset2, "%s", check_reg)) {
+                    //printf("%s\n", check_reg);
+                    int check_reg_len = strlen(check_reg);
+                    if( register_verify(check_reg) != REG_NUN ){
+                        //printf("%s\n", check_reg);
+                        if ( check_synt(cmd + offset + offset2 + check_reg_len)== -1){
+                        printf("SYNRAX ERROR, UNNOWN CONSTRACTION %d\n", line);
+                        free(check_reg);  
+                        return -1;
+                    }
+                        free(check_reg);
+                        
+                        return 2;
+                    }
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION %d\n", line);
+                    free(check_reg);  
                     return -1;
                 }
+            printf("SYNRAX ERROR, UNNOWN CONSTRACTION %d\n", line);
+            free(check_reg);  
+            return -1;
+            }
+            
+            //offset += offset2;
+            if ( sscanf( cmd + offset++ + offset2, "%d %n", &num, &offset2)) {
+                    //printf("we are here : %d is int\n", num);
+                    //printf("we are here : %s\n", cmd + offset + offset2);
 
+                    if ( check_synt(cmd + offset )== -1) {
+
+                    offset += offset2 + skip_spaces(cmd + offset + offset2);
+
+                    if ( cmd[offset] == '\0') {
+                        free(check_reg);
+                        return sizeof(char) + sizeof(int);
+                    }
+
+
+                    if ( cmd[offset] != '+' ) {
+                        printf("%s\n", cmd + offset);
+                        printf("SYNRAX ERROR, UNNOWN CONSTRACTION USING RAM\n");
+                        free(check_reg);  
+                        return -1;
+                    }
+
+
+                    offset++;
+                    offset +=skip_spaces(cmd + offset);
+                    //printf("%s\n", cmd + offset);
+
+                    if (sscanf( cmd + offset, "%s", check_reg)) {
+                        if( register_verify(check_reg) != REG_NUN ){
+                        //printf("%s\n", check_reg);
+                        int check_reg_len = strlen(check_reg);
+                        if ( check_synt(cmd + offset + check_reg_len)== -1){
+                            printf("SYNRAX ERROR, UNNOWN CONSTRACTION  USING RAM %d\n", line);
+                            free(check_reg);  
+                            return -1;
+                        }
+                            free(check_reg);
+                            
+                            return sizeof(char) + sizeof(char) + sizeof(int);
+                        }
+                        printf("SYNRAX ERROR, UNNOWN CONSTRACTION USING RAM %d\n", line);
+                        free(check_reg);  
+                        return -1;
+                    }
+                    
+                    printf("SYNRAX ERROR, GENERAL UNNOWN CONSTRACTION\n");
+                    free(check_reg);  
+                    return -1;
+                }
                 free(check_reg);
                 return sizeof(char) + sizeof(int);
+            }
+
+            if (sscanf( cmd + offset, "%s", check_reg)) {
+                if( register_verify(check_reg) != REG_NUN ){
+                //printf("%s\n", check_reg);
+                int check_reg_len = strlen(check_reg);
+                if ( check_synt(cmd + offset + check_reg_len)== -1){
+                    printf("SYNRAX ERROR, UNNOWN CONSTRACTION REGISTER AND RAM IN LINE %d\n", line);
+                    free(check_reg);  
+                    return -1;
                 }
-                printf("POP ERROR with registers\n");
-                free(check_reg);
+                    free(check_reg);
+                    
+                    return sizeof(char) + sizeof(char);
+                }
+                printf("%s\n", check_reg);
+                printf("SYNRAX ERROR, UNNOWN REGISTER NAME %d\n", line);
+                free(check_reg);  
                 return -1;
             }
-            printf("POP ERROR\n");
-            free(check_reg);
+
+            printf("SYNRAX ERROR, UNNOWN CONSTRACTION IN LINE%d\n", line);
+            free(check_reg);  
             return -1;
         default:
-            printf("SYNTAX ERROR, UNKNOWN COMMAND\n");
+            printf("SYNTAX ERROR, UNKNOWN COMMAND %d\n", line);
             return -1;
     }
     return 0;
@@ -692,7 +877,7 @@ int cmd_analyse(char** cmd, size_t cmd_size, label* marks, size_t marks_size) {
 
     for ( int i = 0; i < (int)cmd_size; i++) {
 
-    if ((tmp = analyse_verify(cmd[i], marks, marks_size, (int)sum) ) == -1 ){
+    if ((tmp = analyse_verify(cmd[i], marks, marks_size, sum, i) ) == -1 ){
             
             printf("SYNTAX ERROR IN FIRST ANALYSIS\n");
             return 0;
@@ -714,13 +899,13 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
     if (cmd_code == PUSH) {
 
         el_type value = -1;
-
+        arr[tmp_ip] = 0;
         int num = 0;
-        
-        
+        int offset = 0;
+        int squares = 0;
+        int offset2 = 0;
         //int scanf_ret = sscanf(command, "%d", &value);
         //printf("scanf -> %d\n", scanf_ret);
-
         if (sscanf(cmd, "%lf", &value)){
             arr[tmp_ip++] = cmd_code + IMMED_FLAG;
             *ip += 1;
@@ -730,15 +915,66 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
             return 0;
         }
         check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+        offset += skip_spaces(cmd);
+        if ( ( cmd[offset] == '[' ) ){
+            offset += 1;
+            arr[tmp_ip] += RAM_FLAG;
+        } 
+        arr[tmp_ip] += cmd_code;
 
-        if (sscanf(cmd, "%s", check_reg)) {
-            int check_reg_offset = skip_sqares(check_reg);
-            if ( check_reg_offset != 0 ) arr[tmp_ip] = cmd_code + RAM_FLAG;
-            else arr[tmp_ip] = cmd_code;
+        if ( sscanf( cmd + offset, "%d %n", &num, &offset2)) {
+            arr[tmp_ip] += IMMED_FLAG;
+            *ip += 1;
+            //printf("we are here : %d is int\n", num);
+            *(int*)(arr + tmp_ip + 1) = num;
+            *ip += sizeof(int);
+
+            offset += offset2+ skip_spaces(cmd + offset + offset2);
+
+            if ( cmd[offset] == '\0') {
+                free(check_reg);
+                return 0;
+            }
+
+
+            if ( cmd[offset] != '+' ) {
+                printf("%s\n", cmd + offset);
+                printf("SYNRAX ERROR, UNNOWN CONSTRACTION USING RAM\n");
+                free(check_reg);  
+                return -1;
+            }
+            
+            offset++;
+            offset += skip_spaces(cmd + offset);
+
+            if (sscanf( cmd + offset, "%s", check_reg)) {
+                int tmp_reg = -1;
+                if ( (tmp_reg = register_verify(check_reg )) != REG_NUN ) {
+                //printf("%s\n", check_reg);
+                    arr[tmp_ip] += REG_FLAG;
+                    arr[tmp_ip + 1 + sizeof(int)] = (char)tmp_reg;
+                    *ip += sizeof(char);
+                    free(check_reg);
+                    
+                    return 0;
+                }
+                printf("%s\n", check_reg);
+                printf("SYNTAX ERROR, PUSH HAS WRONG REGISTER NAME\n");
+                free(check_reg);  
+                return -1;
+            }
+            free(check_reg);
+            return 0;
+        }
+
+
+        if (sscanf(cmd + offset, "%s", check_reg)) {
+
+            //arr[tmp_ip] += cmd_code;
             int tmp_reg = -1;
             //printf("here may be problem %s\n", check_reg);
             //printf("here may be problem %s\n", check_reg + check_reg_offset);
-            if( ( (tmp_reg = register_verify(check_reg + check_reg_offset) ) != REG_NUN )){
+            if( ( (tmp_reg = register_verify(check_reg )) != REG_NUN )){
                 //printf("tmp_reg is %d\n", tmp_reg);
                 //printf("tmp_reg is %d\n", REG_NUN);
                 //printf("here may be problem %s\n", check_reg + check_reg_offset);
@@ -750,20 +986,11 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
                 return 0;
             }
             //printf("here may be problem %s\n", check_reg + check_reg_offset);
-            if ( sscanf( check_reg + check_reg_offset, "%d", &num) ) 
-            {
-                arr[tmp_ip++] += IMMED_FLAG;
-                *ip += 1;
-                //printf("we are here : %d is int\n", num);
-                *(int*)(arr + tmp_ip) = num;
-                *ip += sizeof(int);
-                free(check_reg);
-                return 0;
-            }
 
         }
         free(check_reg);
-        printf("SYNTAX ERROR, PUSH HAS WRONG ARG\n");
+
+        printf("SYNTAX ERROR, PUSH HAS WRONG ARG tititi\n");
         return -1;
                 
     }
@@ -815,8 +1042,98 @@ int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_
         el_type value = 0;
         int num = 0;
         char* check_reg;
-        
+        arr[tmp_ip] = 0;
+        int offset = 0;
+        int squares = 0;
+        int offset2 = 0;
+        //int scanf_ret = sscanf(command, "%d", &value);
+        //printf("scanf -> %d\n", scanf_ret);
+        if (sscanf(cmd, "%lf", &value)){
+            arr[tmp_ip++] = cmd_code + IMMED_FLAG;
+            *ip += 1;
+            //printf("value[%d]\n",value);
+            *(el_type*)(arr + tmp_ip) = value;
+            *ip += sizeof(el_type);
+            return 0;
+        }
+        check_reg = (char*)calloc(sizeof(char), MAX_LINE);
+        offset += skip_spaces(cmd);
+        if ( ( cmd[offset] == '[' ) ){
+            offset += 1;
+            arr[tmp_ip] += RAM_FLAG;
+        } 
+        arr[tmp_ip] += cmd_code;
 
+        if ( sscanf( cmd + offset, "%d %n", &num, &offset2)) {
+            arr[tmp_ip] += IMMED_FLAG;
+            *ip += 1;
+            //printf("we are here : %d is int\n", num);
+            *(int*)(arr + tmp_ip + 1) = num;
+            *ip += sizeof(int);
+
+            offset += offset2+ skip_spaces(cmd + offset + offset2);
+
+            if ( cmd[offset] == '\0') {
+                free(check_reg);
+                return 0;
+            }
+
+
+            if ( cmd[offset] != '+' ) {
+                printf("%s\n", cmd + offset);
+                printf("SYNRAX ERROR, UNNOWN CONSTRACTION USING RAM\n");
+                free(check_reg);  
+                return -1;
+            }
+            
+            offset++;
+            offset += skip_spaces(cmd + offset);
+
+            if (sscanf( cmd + offset, "%s", check_reg)) {
+                int tmp_reg = -1;
+                if ( (tmp_reg = register_verify(check_reg )) != REG_NUN ) {
+                //printf("%s\n", check_reg);
+                    arr[tmp_ip] += REG_FLAG;
+                    arr[tmp_ip + 1 + sizeof(int)] = (char)tmp_reg;
+                    *ip += sizeof(char);
+                    free(check_reg);
+                    
+                    return 0;
+                }
+                printf("%s\n", check_reg);
+                printf("SYNTAX ERROR, PUSH HAS WRONG REGISTER NAME\n");
+                free(check_reg);  
+                return -1;
+            }
+            free(check_reg);
+            return 0;
+        }
+
+
+        if (sscanf(cmd + offset, "%s", check_reg)) {
+
+            //arr[tmp_ip] += cmd_code;
+            int tmp_reg = -1;
+            //printf("here may be problem %s\n", check_reg);
+            //printf("here may be problem %s\n", check_reg + check_reg_offset);
+            if( ( (tmp_reg = register_verify(check_reg )) != REG_NUN )){
+                //printf("tmp_reg is %d\n", tmp_reg);
+                //printf("tmp_reg is %d\n", REG_NUN);
+                //printf("here may be problem %s\n", check_reg + check_reg_offset);
+                arr[tmp_ip++] += REG_FLAG;
+                *ip += 1;
+                *(arr + tmp_ip) = (char)tmp_reg;
+                free(check_reg);
+                *ip += sizeof(char);
+                return 0;
+            }
+            //printf("here may be problem %s\n", check_reg + check_reg_offset);
+
+        }
+        free(check_reg);
+
+        printf("SYNTAX ERROR, PUSH HAS WRONG ARG tititi\n");
+        return -1;
 
 
         check_reg = (char*)calloc(sizeof(char), MAX_LINE);

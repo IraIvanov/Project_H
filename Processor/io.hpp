@@ -15,6 +15,7 @@ enum IO_ERRORS{
 int buf_read( char** code, FILE* input, size_t* size);
 int stricmp(const char* str1, const char* str2);
 int cmd_get(char *code, char***cmd, size_t* size, size_t code_size) ;
-void cmd_print(char** cmd, size_t cmd_size);
+int cmd_print(char** cmd, size_t cmd_size);
+int skip_spaces(char *str);
 
 #endif

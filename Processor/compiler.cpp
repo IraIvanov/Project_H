@@ -38,6 +38,10 @@ int main(int argc, char *argv[]) {
     cmd_get(code, &cmd, &cmd_size, code_size);
     //cmd_print(cmd, cmd_size);
     label* marks;
+    if ( !(*cmd) ){
+        printf ("\x1b[31m FILE ERROR \x1b[0m \n");
+        return -1;
+    }
     labels_ctor(&marks, MARKS_SIZE);
     size_t arr_size = cmd_analyse(cmd, cmd_size, marks, MARKS_SIZE);
     
