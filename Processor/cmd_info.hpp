@@ -1,14 +1,11 @@
-
-
-
-DEF_CMD(HLT, 0, 3, 0,  stack_dtor(stk);
+DEF_CMD(HLT, 0, 3, 0, { stack_dtor(stk);
                 stack_dtor(stk_addr);
                 printf("stack destroied\n");
                 return 0;
                 break;  
-    
+                }
 )
-DEF_CMD(PUSH, 1, 4, 1,  if( code[ip] & RAM_FLAG ){
+DEF_CMD(PUSH, 1, 4, 1, { if( code[ip] & RAM_FLAG ){
                     int arg = 0;
                     int tmp_ip = ip + 1;
                     if (code[ip] & IMMED_FLAG) {
@@ -50,37 +47,37 @@ DEF_CMD(PUSH, 1, 4, 1,  if( code[ip] & RAM_FLAG ){
                 stack_push(stk , val);
 
                 break;
-                
+                }
 )
 
 
-DEF_CMD(ADD, 2, 3, 0, stack_pop(stk , &var1);
+DEF_CMD(ADD, 2, 3, 0, { stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
 
                 stack_push(stk , var1 + var2);
                 ip++;
                 break;
-                
+                }
 )
 
-DEF_CMD(SUB, 3, 3, 0,  stack_pop(stk , &var1);
+DEF_CMD(SUB, 3, 3, 0, { stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
 
                 stack_push(stk , var2 - var1);
                 ip++;
                 break;
-                
+                }
 )
 
-DEF_CMD(MUL, 4, 3, 0,  stack_pop(stk , &var1);
+DEF_CMD(MUL, 4, 3, 0, { stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
                 stack_push(stk , var1*var2);
                 ip++;
                 break;
-                
+                }
 )
 
-DEF_CMD(DIV, 5, 3, 0,  stack_pop(stk , &var1);
+DEF_CMD(DIV, 5, 3, 0, { stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
                 if ( !is_equal( var1 , 0 ) ){
                     printf("EXECUTING ERROR , DIVISION BY ZERO\n");
@@ -91,31 +88,37 @@ DEF_CMD(DIV, 5, 3, 0,  stack_pop(stk , &var1);
                 stack_push(stk , var2 / var1);
                 ip++;
                 break;
-                
+                }               
 )
 
-DEF_CMD(OUT, 6, 3, 0,  
+DEF_CMD(OUT, 6, 3, 0,
+                {
                 stack_pop(stk , &var1);
                 printf("%lf\n" , var1);
                 ip++;
                 break;
+                }
 )
-DEF_CMD(DUMP, 7, 4, 0,  dump(stk , LOG , 0);
+DEF_CMD(DUMP, 7, 4, 0, { dump(stk , LOG , 0);
                 printf("dumping...\n");
                 //dump_cpu(code, ip);
                 ip++;
                 break;
-                
+                }
 )
-DEF_CMD(JMP, 8, 3, 1,  ip++;
+DEF_CMD(JMP, 8, 3, 1, { ip++;
                 ip = *((int*)(code + ip));
                 break;
+                }
+)
+DEF_CMD(MARK, 9, 1, 0, {
+                    break;
+                    }
                 
 )
-DEF_CMD(MARK, 9, 1, 0,  break;
-                
-)
-DEF_CMD(POP, 10, 3, 1,  stack_pop(stk , &var1);
+DEF_CMD(POP, 10, 3, 1,  
+                {
+                stack_pop(stk , &var1);
 
                 if( code[ip] & RAM_FLAG ){
                     int arg = 0;
@@ -144,85 +147,106 @@ DEF_CMD(POP, 10, 3, 1,  stack_pop(stk , &var1);
                 }
                 
                 break;
-                
+                }
 )
-DEF_CMD(DUP, 11, 3, 0,  stack_pop(stk , &var1);
+DEF_CMD(DUP, 11, 3, 0,
+                {
+                stack_pop(stk , &var1);
                 stack_push(stk , var1);
                 stack_push(stk , var1);
                 ip++;
                 break;
-                
+                }
 )
-DEF_CMD(CALL, 12, 4, 1,  ip++;
+DEF_CMD(CALL, 12, 4, 1,
+                {
+                ip++;
                 tmp = ip + sizeof(int);
                 memcpy(&val , &tmp , sizeof(int));
                 stack_push(stk_addr , val);
                 ip = *((int*)(code + ip));
                 break;
-                
+                }
 )
-DEF_CMD(RET, 13, 3, 0,  stack_pop(stk_addr , &val);
+DEF_CMD(RET, 13, 3, 0,
+                {
+                stack_pop(stk_addr , &val);
                 memcpy(&ip , &val , sizeof(int));
                 break;
-                
+                }
 )
-DEF_CMD(JB, 14, 2, 1,  ip++;
+DEF_CMD(JB, 14, 2, 1,
+                {
+                ip++;
                 stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
                 if ( (var2 - var1) < 0  && is_equal(var1 , var2) ) ip = *(int*)(code + ip);
                 else ip += sizeof(int);
                 break;
-                
+                }
 )
-DEF_CMD(JBE, 15, 3, 1,  ip++;
+DEF_CMD(JBE, 15, 3, 1,
+                {
+                ip++;
                 stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
                 if ( (var2 - var1) <= 0 || !is_equal(var1 , var2)) ip = *(int*)(code + ip);
                 else ip += sizeof(int);
                 break; 
-                
+                }
 )
-DEF_CMD(JA, 16, 2, 1,  ip++;
+DEF_CMD(JA, 16, 2, 1,  
+                {
+                ip++;
                 stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
                 if ( (var2 - var1) > 0 && is_equal(var1 , var2)) ip = *(int*)(code + ip);
                 else ip += sizeof(int);
                 break;
-                
+                }
 )
-DEF_CMD(JAE, 17, 3, 1, ip++;
+DEF_CMD(JAE, 17, 3, 1, 
+                {
+                ip++;
                 stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
                 if ( (var2 - var1) >= 0 ||!is_equal(var1 , var2) ) ip = *(int*)(code + ip);
                 else ip += sizeof(int);
                 break;
-                
+                }
 )
-DEF_CMD(JE, 18, 2, 1,  ip++;
+DEF_CMD(JE, 18, 2, 1,
+                {
+                ip++;
                 stack_pop(stk , &var1);
                 stack_pop(stk , &var2);
                 if ( (var2 - var1) == 0 || !is_equal(var1 , var2 )) ip = *(int*)(code + ip);
                 else ip += sizeof(int);
                 break;
-                
+                }
 )
 DEF_CMD(JNE, 19, 3, 1, 
+                {
                 ip++;
                 stack_pop(stk, &var1);
                 stack_pop(stk, &var2);
                 if ( (var2 - var1) != 0 && is_equal(var1, var2) ) ip = *(int*)(code + ip);
                 else ip += sizeof(int);
                 break;  
-
+                }
 )
 DEF_CMD(IN, 20, 2, 0,
+                {
                 ip++;
                 scanf("%lf", &var1);
                 while(getchar()!='\n'){}//printf("inputed!\n");
                 stack_push(stk, var1);
                 break;
+                }
 )
 
-DEF_CMD(NUN, 0x1F, 1488, 0, break;
-                            
+DEF_CMD(NUN, 0x1F, 1488, 0, 
+                {
+                break;
+                }           
 )

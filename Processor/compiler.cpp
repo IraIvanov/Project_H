@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     if ( !input ) {
 
         fprintf(stderr, "\x1b[31m ERROR WHILE READING THE FILE \x1b[0m\n");
-        fclose(input);
+        // fclose(input);
         return -1;
 
     }
@@ -33,11 +33,11 @@ int main(int argc, char *argv[]) {
     size_t code_size = 0;
     buf_read( &code, input, &code_size);
     
-    char**cmd = NULL;
+    char **cmd = NULL;
     size_t cmd_size = 0;
     cmd_get(code, &cmd, &cmd_size, code_size);
     //cmd_print(cmd, cmd_size);
-    label* marks;
+    label* marks = NULL;
     if ( !(*cmd) ){
         printf ("\x1b[31m FILE ERROR \x1b[0m \n");
         return -1;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    if ( assamble(cmd, cmd_size, marks, arr, MARKS_SIZE) == -1) {
+    if ( assemble(cmd, cmd_size, marks, arr, MARKS_SIZE) == -1) {
         printf( "SYNTAX ERROR\n");
         fclose(input);
         free(arr);

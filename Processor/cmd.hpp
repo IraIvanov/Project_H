@@ -44,6 +44,16 @@ enum flags {
     IMMED_FLAG = 0b00100000,
 };
 
+enum ASSEMBLE_ERRORS {
+    NULL_PTR       = -1,
+    SYNT_ERROR     = -1,
+    LENGTH_ERR     = -1,
+    AS_ALLOC_ERR   = -1,
+    LABEL_MEM_ERR  = -1,
+    LABEL_NAME_ERR = -1,
+    GET_ARGS_ERR   = -1,
+    ASSEMBLE_ERR   = -1,
+};
 #define SIGNATURE "SP"
 
 const char VERSION = 3;
@@ -59,36 +69,36 @@ const size_t RAM_SIZE = 1024;
 
 int code_read( char** code, FILE* input, size_t* size);
 
-void arr_print(char* arr, size_t size);
+void arr_print(const char* arr, const size_t size);
 
-enum CMD command_verify ( char* command);
+int command_verify ( const char* command);
 
-enum CMD code_verify ( el_type code);
+int code_verify ( const el_type code);
 
 //void dump_proc(el_type* code, )
-enum REGS register_verify ( char* buf );
+enum REGS register_verify ( const char* buf );
 
-int analyse_verify( char* cmd, label* marks, size_t marks_size,int ip, int line);
+int analyse_verify( char* cmd, label* marks, const size_t marks_size, const int ip, const int line);
 
-int cmd_analyse(char** cmd, size_t cmd_size, label* marks, size_t marks_size);
+int cmd_analyse(char** cmd, const size_t cmd_size, label* marks, const size_t marks_size);
 
-int get_args(char* cmd, int cmd_code, size_t *ip, label* marks, char *arr, size_t marks_size);
+int get_args(char* cmd, const int cmd_code, size_t *ip, const label* marks, char *arr, const size_t marks_size);
 
-int assamble(char** cmd, size_t cmd_size, label* marks, char* arr, size_t marks_size);
+int assemble( char** cmd,const size_t cmd_size, const label* marks, char* arr, const size_t marks_size);
 
-int check_synt( char* str);
+int check_synt(const char* str);
 
 int skip_comments(char *str);
 
 int skip_sqares(char *str);
 
-int labels_ctor(label** marks, size_t MARKS_SIZE);
+int labels_ctor(label** marks, const size_t MARKS_SIZE);
 
 int labels_dtor(label* marks);
 
-int execute (char *code, size_t code_size, stack* stk, stack* stk_addr, el_type* ram, size_t ram_size, el_type *regs );
+int execute (const char *code, const size_t code_size, stack* stk, stack* stk_addr, el_type* ram, const size_t ram_size, el_type *regs );
 
-int is_equal(el_type var1, el_type var2);
+int is_equal(const el_type var1, const el_type var2);
 
 
 
