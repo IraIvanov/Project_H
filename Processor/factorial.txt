@@ -1,0 +1,38 @@
+
+; visible recurtion
+
+IN 
+:push 2
+pop rax
+push 1
+pop rbx
+push 1
+pop rdx
+call :factorial
+push rbx
+out
+hlt
+
+:factorial ; rax num rbx res 
+push rax
+push rdx
+JBE :end
+push rbx
+push rdx
+push 1
+add ;rbx rdx+1
+mul ; rbx*rdx
+
+pop rbx
+push rdx
+;push rax
+
+push 1
+ADD
+pop rdx
+
+call :factorial 
+:end
+;push 5
+;out
+ret
