@@ -26,7 +26,10 @@ int main(int argc, char *argv[]) {
     short signature = 0;
     size_t code_size;
     el_type regs[REG_SIZE] = {0};
-    el_type ram[RAM_SIZE] = {0};    
+    el_type ram[RAM_SIZE] = {0};
+    for ( size_t i = 0; i < RAM_SIZE; i++) {
+        ram[i] = 0;
+    }    
     fread(&version, sizeof(char), 1, input);
     
     if (version != VERSION) {
@@ -58,7 +61,7 @@ int main(int argc, char *argv[]) {
     fwrite(code, sizeof(char), code_size, log);
     fclose(log);
 
-    if ( execute(code, code_size, &stk,&stk_addr, ram, RAM_SIZE, regs) == -1) {
+    if ( execute(code, (const size_t)code_size, &stk,&stk_addr, ram, (const size_t)RAM_SIZE, regs) == -1) {
         printf("EXEC ERROR\n");
         fclose(input);
         free(code);

@@ -244,7 +244,45 @@ DEF_CMD(IN, 20, 2, 0,
                 break;
                 }
 )
+DEF_CMD(GRAPH, 21, 5, 0,
+                    {
+                        ip++;
+                        stack_pop(stk, &var1);
+                        tmp = (int)var1;
+                        if ( tmp < 0 ) {
+                            printf("GRAPH ERROR\n");
+                            break;
+                        }
+                        //printf("%lu\n", tmp);
+                        /*if (tmp == 10) printf("\n");
+                        if (tmp == 12) printf("*");
+                        if (tmp == 11) printf(" ");*/
+                        for(size_t i = 0; i < RAM_SIZE; i++) {
+                            if ( i == (size_t)tmp ) printf("\n");
+                            if ( (int)ram[i] == 10) printf("*");
+                            else printf(" ");
+                        }
+                        printf("\n");
+                        break;
+                    }
+)
+DEF_CMD(SIN, 22, 3, 0,
+                  {
+                      ip++;
+                      stack_pop(stk, &var1);
+                      var1 = sin(var1);
+                      stack_push(stk, var1);
+                  }  
+)
 
+DEF_CMD(COS, 23, 3, 0,
+                  {
+                      ip++;
+                      stack_pop(stk, &var1);
+                      var1 = cos(var1);
+                      stack_push(stk, var1);
+                  }  
+)
 DEF_CMD(NUN, 0x1F, 1488, 0, 
                 {
                 break;
