@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "../Stack/stack.hpp"
+#include "stack.hpp"
 #include <malloc.h>
 
 #define ZOMBIE 0
