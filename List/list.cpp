@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "list.hpp"
 #include <stdlib.h>
+#include <string.h>
 
 int list_verify( const list_t* list ){
 
@@ -55,12 +56,14 @@ int list_ctor( list_t* list, int size ) {
     for (int i = 0; i < (list->capacity); i++){
     
         (list->next)[i] = i + 1;
-        (list->prev)[i] = -1;
+        (list->prev)[i] = FREE;
+        (list->data)[i] = POISON;
     } 
     (list->next)[size - 1] = 0;
     (list->next)[0] = 0;
     (list->prev)[1] = 0;
     (list->prev)[0] = 0;
+    (list->data)[0] = null_data;
     //(list->prev)[size - 1] = -1;
 
     return 0;
@@ -96,6 +99,13 @@ int list_add ( list_t* list, int place, el_t value ) {
 
     if ( list->free == 0 || list->size >= list->capacity ) return OUT_OF_MEM;
     
+    if ( (list->prev)[place] == FREE || place >= (list->capacity - 1) ) {
+
+        fprintf(stderr,  "Root element is empty!\n");
+        return INVALID_ERR;
+
+    }
+
     if ( place != 0 && place != (list->prev)[0] ) list->happinez_wolfanino_flag = OFF;
 
     int free_plc = list->free, tmp_next_plc = 0;
@@ -111,29 +121,54 @@ int list_add ( list_t* list, int place, el_t value ) {
     return 0;
 }
 
-int list_dump( list_t* list) {
+int list_dump( list_t* list, const char* name) {
 
     int err = 0;
 
-    if ( !list ) return LIST_NULL_PTR;
+    if ( !name ) return INVALID_ERR;
 
     if ( (err = list_verify(list)) < 0) return err;
 
     int pos = (list->next)[0];
 
-    FILE* log = fopen(LOG, "a");
+    FILE* log = fopen(LOG, "w");
 
-    fprintf ( log, "size is %d\n capacity is %d\n data ptr is %p\n prev ptr is %p\n next ptr is %p\n", list->size, list->capacity, (void*)(list->data), (void*)(list->prev), (void*)(list->next));
-    for ( int i = 0; i < list->size && pos != 0 ; i++ ){
+    if ( !log ) {
 
-        fprintf(log, "[%d] prev <- [%c] -> next [%d]\n", (list->prev)[pos], (list->data)[pos] ,(list->next)[pos]);
-
-        pos = (list->next)[pos];
+        fprintf(stderr, "\x1b[31m ERROR WHILE DUMPING THE FILE \x1b[0m\n");
+        return INVALID_ERR;
 
     }
-    
+
+    fprintf( log, "digraph G {\n\trankdir=LR;\ngraph [dpi = 100];\n spline = ortho\n");
+
+
+    for ( int i = 0; i < list->capacity; i++){
+        
+        if ( (list-> data)[i] == POISON) fprintf( log, "\t node%d [shape=\"record\",  style=\"rounded, filled\", fillcolor = \"#fb45a7\" label=\" index %d | value PSN | { prev %d | next %d } \" ];\n", i, i,\
+        (list->prev)[i], (list->next)[i]);
+
+        else fprintf( log, "\t node%d [shape=\"record\", style=\"rounded, filled\", fillcolor = \"#9d4cef\" label=\" index %d | value %d | { prev %d | next %d } \" ];\n", i, i,\
+        (list->data)[i], (list->prev)[i], (list->next)[i]);
+
+    }
+
+    for ( int i = 0; i < list->capacity /*&& pos != 0*/ ; i++ ){
+
+        if ( (list->prev)[i] == FREE )  fprintf(log, "\tnode%d->node%d [color = red];\n ", i, (list->next)[i]);
+        else fprintf(log, "\tnode%d->node%d [color = blue];\n", i, (list->next)[i]);
+
+    }
+    fprintf(log, "}\n");
+
     fclose(log);
 
+    char *command = (char*)calloc(MAX_LINE, sizeof(char));
+    strcpy(command, "dot -Tsvg log.txt > ");
+    command = strcat(command, name);
+    command = strcat(command, ".svg");
+    system(command);
+    free(command);
     return 0;
 }
 
@@ -170,6 +205,14 @@ int list_remove( list_t* list, int place ) {
 
     if ( place <= 0 || list->size == 0 ) return NULL_SIZE;
 
+    if ( (list->prev)[place] == FREE ) {
+
+        fprintf(stderr,  "Root element is empty!\n");
+        return INVALID_ERR;
+
+    }
+
+    (list->data)[place] = POISON;
     int tmp_free = list->free, tmp_next = list->next[place], prev = (list->prev)[place];
     list->free = place;
     (list->next)[place] = tmp_free;
@@ -259,6 +302,23 @@ int list_realloc( list_t* list, int size ){
         (list->prev)[i] = -1;
         (list->next)[i] = list->free;
         list->free = i; 
+
+    }
+ 
+    return 0;
+
+}
+
+int list_print( list_t* list ) {
+
+    int err = 0;
+    if ( (err = list_verify(list)) < 0) return err;
+
+    int pos = (list->next)[0];
+    while ( pos != 0 ) {
+
+        fprintf( stdout, "%d\n", (list->data)[pos] );
+        pos = (list->next)[pos];
 
     }
 

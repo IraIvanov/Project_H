@@ -1,0 +1,25 @@
+digraph G {
+	rankdir=LR;
+graph [dpi = 100];
+ spline = ortho
+	 node0 [shape="record", style="rounded, filled", fillcolor = "#9d4cef" label=" index 0 | value -66 | { prev 9 | next 3 } " ];
+	 node1 [shape="record",  style="rounded, filled", fillcolor = "#fb45a7" label=" index 1 | value PSN | { prev -1 | next 0 } " ];
+	 node2 [shape="record",  style="rounded, filled", fillcolor = "#fb45a7" label=" index 2 | value PSN | { prev -1 | next 1 } " ];
+	 node3 [shape="record", style="rounded, filled", fillcolor = "#9d4cef" label=" index 3 | value 51 | { prev 0 | next 4 } " ];
+	 node4 [shape="record", style="rounded, filled", fillcolor = "#9d4cef" label=" index 4 | value 52 | { prev 3 | next 5 } " ];
+	 node5 [shape="record", style="rounded, filled", fillcolor = "#9d4cef" label=" index 5 | value 53 | { prev 4 | next 6 } " ];
+	 node6 [shape="record", style="rounded, filled", fillcolor = "#9d4cef" label=" index 6 | value 54 | { prev 5 | next 7 } " ];
+	 node7 [shape="record", style="rounded, filled", fillcolor = "#9d4cef" label=" index 7 | value 55 | { prev 6 | next 8 } " ];
+	 node8 [shape="record", style="rounded, filled", fillcolor = "#9d4cef" label=" index 8 | value 56 | { prev 7 | next 9 } " ];
+	 node9 [shape="record", style="rounded, filled", fillcolor = "#9d4cef" label=" index 9 | value 57 | { prev 8 | next 0 } " ];
+	node0->node3 [color = blue];
+	node1->node0 [color = red];
+ 	node2->node1 [color = red];
+ 	node3->node4 [color = blue];
+	node4->node5 [color = blue];
+	node5->node6 [color = blue];
+	node6->node7 [color = blue];
+	node7->node8 [color = blue];
+	node8->node9 [color = blue];
+	node9->node0 [color = blue];
+}

@@ -11,6 +11,11 @@ typedef char el_t;
 #define DEAD 0xDEAD
 #define ALIVE 74261727
 #define LOG "log.txt"
+#define POISON (el_t)0xDEAD
+#define el_specify "%c"
+#define null_data (el_t)0xBABE
+#define MAX_LINE 1024
+#define FREE -1
 
 #define DED_PTR 0xDEADBABE
 
@@ -56,7 +61,7 @@ int list_find ( list_t* list, int place );
 
 int list_add ( list_t* list, int place, el_t value );
 
-int list_dump( list_t* list);
+int list_dump( list_t* list, const char* name);
 
 int list_dtor( list_t* list );
 
@@ -67,5 +72,7 @@ int list_sort( const list_t* dest, list_t* res );
 int show_flag( list_t* list );
 
 int list_realloc( list_t* list, int size );
+
+int list_print( list_t* list );
 
 #endif
