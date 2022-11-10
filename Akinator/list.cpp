@@ -8,14 +8,14 @@ int list_verify( const list_t* list ){
     int err = 0;
     if ( !list ) return LIST_NULL_PTR;
     if ( list->capacity < list->size) err += CAP_LESSER_SZ;
-    if ( !list->data ) err += DATA_NULL_PTR;
+    if ( !list->data ) err += L_DATA_NULL_PTR;
     if ( !list->prev ) err += PREV_NULL_PTR;
     if ( !list->next ) err += NEXT_NULL_PTR;
     if ( list->free > list->capacity ) err += FREE_SEG_FAULT;
     if ( list->size < 0 ) err += NULL_SIZE;
     if ( list->capacity <= 0) err += NULL_CAP;
     if ( list->status != ALIVE ) err += DEAD_LIST;
-    if ( list->prev == (int*)DED_PTR || list->next == (int*)DED_PTR || list->data == (el_t*)DED_PTR ) err += INVALID_ERR;
+    if ( list->prev == (int*)DED_PTR || list->next == (int*)DED_PTR || list->data == (list_el_t*)DED_PTR ) err += INVALID_ERR;
 
     return err;
 }
@@ -33,7 +33,7 @@ int list_ctor( list_t* list, int size ) {
 
     } 
     
-    list -> data = (el_t*)calloc( size, sizeof(el_t));
+    list -> data = (list_el_t*)calloc( size, sizeof(list_el_t));
     
     if ( !(list->data) ) return DATA_ALLOC_ERR;
 
@@ -88,7 +88,7 @@ int list_find ( list_t* list, int place ) {
 }
 
 
-int list_add ( list_t* list, int place, el_t value ) {
+int list_add ( list_t* list, int place, list_el_t value ) {
 
     //replace all returns with verify
     int err = 0;
@@ -142,7 +142,7 @@ int list_dump( list_t* list, const char* name) {
         (list->prev)[i], (list->next)[i]);
 
         else fprintf( log, "\t node%d [shape=\"record\", style=\"rounded, filled\", fillcolor = \"#9d4cef\" label=\" index %d | value %s | { prev %d | next %d } \" ];\n", i, i,\
-        (list->data)[i], (list->prev)[i], (list->next)[i]);
+        (list->data)[i]->data, (list->prev)[i], (list->next)[i]);
 
     }
 
@@ -175,7 +175,8 @@ int list_print( list_t* list ) {
     int pos = (list->next)[0];
     while ( pos != 0 ) {
 
-        fprintf( stdout, "%s\n", (list->data)[pos] );
+        if ( (list->data)[pos]->flag == 0) fprintf( stdout, "not ");
+        fprintf( stdout, "%s\n", (list->data)[pos]->data );
         pos = (list->next)[pos];
 
     }
@@ -189,13 +190,13 @@ int list_dtor( list_t* list ) {
     int err = 0;
     err = list_verify( list );
 
-    if ( err & LIST_NULL_PTR || err & DATA_NULL_PTR || err & PREV_NULL_PTR || err & NEXT_NULL_PTR || err & DEAD_LIST || err & INVALID_ERR ) return err;
+    if ( err & LIST_NULL_PTR || err & L_DATA_NULL_PTR || err & PREV_NULL_PTR || err & NEXT_NULL_PTR || err & DEAD_LIST || err & INVALID_ERR ) return err;
 
     free(list->data);
     free(list->prev);
     free(list->next);
 
-    list->data = (el_t*)DED_PTR;
+    list->data = (list_el_t*)DED_PTR;
     list->next = (int*)DED_PTR;
     list->prev = (int*)DED_PTR;
 
@@ -289,7 +290,7 @@ int list_realloc( list_t* list, int size ){
 
     }
 
-    el_t* tmp_data = (el_t*)realloc(list->data, size*sizeof(el_t));
+    list_el_t* tmp_data = (list_el_t*)realloc(list->data, size*sizeof(list_el_t));
 
     if ( !tmp_data ) return DATA_ALLOC_ERR;
 
@@ -317,6 +318,25 @@ int list_realloc( list_t* list, int size ){
 
     }
  
+    return 0;
+
+}
+
+int list_free( list_t* list ){
+
+    int err = 0;
+    if ( (err = list_verify( list )) < 0 ) return err;
+
+    int pos = (list->prev)[0];
+    
+    while ( pos != 0 ) {
+
+        free((list->data)[pos]);
+        list_remove( list, pos );
+        pos = (list->prev)[0];
+
+    }
+
     return 0;
 
 }

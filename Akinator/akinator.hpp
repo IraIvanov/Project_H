@@ -15,4 +15,12 @@ enum errors {
 
 int upload ( node_t* node, FILE* file );
 
+int game ( node_t* node/*, tree_t* tree*/, list_t* seek_list );
+
+int show_def( node_t* node, list_t* seek_list );
+
+int show_tree( node_t* node );
+
+int compare( node_t* node, list_t* seek_list1, list_t* seek_list2 );
+
 #endif

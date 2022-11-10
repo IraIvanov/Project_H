@@ -1,31 +1,31 @@
 
-{Pony
+{pony
 {the best pony
 {got wings
-{Derpy Hooves                           
+{Derpy Hooves
 }
-{Sunset Shimmer                           
+{Sunset Shimmer
 }
 }
 {the strongest pony
-{Applejack                           
+{Applejack
 }
 {the shyest and most kind pony
-{Fluttershy                           
+{Fluttershy
 }
 {the craziest and funniesst pony
-{Pinkie Pie                           
+{Pinkie Pie
 }
 {the fastest and most faithful pony 
-{Rainbow Dash                           
+{Rainbow Dash
 }
 {the most beautiful and most selfless pony
-{Rarity                           
+{Rarity
 }
 {greatest and the most powerful pony
-{Trixie                           
+{Trixie
 }
-{Twilight Sparkle                           
+{Twilight Sparkle
 }
 }
 }
@@ -35,12 +35,12 @@
 }
 }
 {the Lord Of Chaos
-{Discord                           
+{Discord
 }
 {a dragon
-{Spike                           
+{Spike
 }
-{Nobody                           
+{Nobody
 }
 }
 }

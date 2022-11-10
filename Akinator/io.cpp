@@ -97,13 +97,23 @@ int cmd_print(const char** cmd, const size_t cmd_size){
 
 int stricmp(const char* str1, const char* str2) {
 
-    size_t len1 = strlen(str1);
+    /*size_t len1 = strlen(str1);
     size_t len2 = strlen(str2);
     if ( len1 > len2) return 1;
-    if ( len1 < len2) return -1;  
-    for(size_t i = 0; i < len1 && i < len2; i++) {
+    if ( len1 < len2) return -1;*/  
+    size_t i = 0, j = 0;
+    while ( str1[i] != '\0' && str2[j] != '\0' ) {
+
+        if ( isspace(str1[i]) != 0 && str1[i] != '\0' ) i++;
+        if ( isspace(str2[j]) != 0 && str2[j] != '\0' ) j++; 
         if ( tolower(str1[i]) != tolower(str2[i])) return tolower(str1[i]) - tolower(str2[i]);
+        i += 1;
+        j += 1;
+
     }
+    /*for(size_t i = 0; i < len1 && i < len2; i++) {
+        if ( tolower(str1[i]) != tolower(str2[i])) return tolower(str1[i]) - tolower(str2[i]);
+    }*/
 
     return 0;
 }

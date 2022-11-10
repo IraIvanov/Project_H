@@ -8,103 +8,78 @@
 
 int main() {
 
-    tree_t* tree = NULL;
     node_t node = { };
     list_t seek_list = { };
+    list_t seek_list2 = { };
     tree_ctor(&node);
     list_ctor( &seek_list, DEF_LIST_SZ);
-    tree = node.node;
+    list_ctor( &seek_list2, DEF_LIST_SZ);
     FILE* dump = fopen( DUMP, "r" );
     upload( &node, dump );
     fclose(dump);
-    do_dump( &node );
-    char* string = (char*)calloc(MAX_LINE, sizeof(char)), *swap_str;
-    while( 1 ) {
+    char* string = (char*)calloc( MAX_LINE, sizeof(char) );
 
-        if ( tree ){        
-            
-            printf( "It's %s ?\n [Y]es/[N]o?\n", tree->data);
+    while ( 1 ) {
+
+        printf( "What do you wanna do?\n[P]lay, [S]how tree, [C]ompare, [G]et definition, [E]xit.\n");
+        scanf( "%s", string );
+        while( stricmp(string, "P") && stricmp(string, "S") && stricmp(string, "C") && stricmp(string, "G") && stricmp(string, "E") ) {
+        
+            printf( "Sorry, I don't understand\n");
             scanf( "%s", string);
+        
+        }
+
+        if ( !stricmp( string, "P") ) {
             
-            while( stricmp(string, "Y") && stricmp(string, "N") ) {
+            game( &node, &seek_list );
+        
+        } else {
+
+            if ( !stricmp( string, "S") ) {
             
-                printf(" Sorry, I don't understand, please type Y or N\n");
-                scanf( "%s", string);
+                show_tree( &node );
             
-            }
-
-            if ( !stricmp( string, "Y") ) {
-                
-                if ( !tree->left ) {
-                    printf( "Hahaha, as I expected\n");
-                    tree = NULL;
-                }
-
-                else tree = tree->left;    
-                //tree = tree->left;
-            }
-
-            if ( !stricmp( string, "N") ) {
-                
-                if ( !tree->right ) {
-
-                    printf( "So, who it's then ?\n");
-                    while(getchar() != '\n' ){};
-                    scanf( "%[^\n]", string);
-                    int i = 0;
-                    tree_seek( &node, node.node, &i, string, &seek_list, 0);
-
-                    if ( i == 1 ){
-                        printf( "This object already in database, here it's defenition:\n");
-                        list_print(&seek_list);
-                        tree = NULL;
-                    }
-                    else {
-                        swap_str = tree->data;
-                        tree_append_right( &node, tree, swap_str);
-                        tree_append_left(&node, tree, string);
-                        printf( " How %s is different from %s.\nIt's ...", string, swap_str );
-                        free ( swap_str );
-                        while(getchar() != '\n' ){};
-                        scanf( "%[^\n]", string );
-                        tree->data = strdup(string);
-                        tree = NULL;
-                    }
-
+            } else {
+ 
+                if ( !stricmp( string, "C") ) {
+            
+                    compare( &node, &seek_list, &seek_list2 );
+            
                 }
 
                 else {
 
-                    tree = tree->right;
+                    if ( !stricmp( string, "G") ) {
+            
+                        show_def( &node, &seek_list );
+            
+                    } else {
+
+                        break;
+
+                    }
+
                 }
 
-                //tree = tree->right;
             }
 
         }
 
-        else {
-
-            printf( "Play again?\n[Y]es/[N]o\n");
-            scanf( "%s", string);
+        if ( !stricmp( string, "N") ) {
             
-            while( stricmp(string, "Y") && stricmp(string, "N") ) {
+            free(string);
+            return 0;
             
-                printf(" Sorry, I don't understand, please type Y or N\n");
-                scanf( "%s", string);
-            
-            }
-
-            if ( !stricmp( string, "Y") ) tree = node.node;
-            if ( !stricmp( string, "N") ) break;
-
         }
 
     }
-    graph_dump( &node );
+
     do_dump( &node );
     list_dtor( &seek_list );
-    tree_dtor( &node, node.node);
-    free(string);
+    list_dtor( &seek_list2 );
+    tree_dtor( &node, node.node );
+    free( string );
     return 0;
+
 }

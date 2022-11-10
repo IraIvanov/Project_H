@@ -121,7 +121,7 @@ int graph_dump ( node_t* node ) {
     if ( (err = node_verify( node ))!= 0 ) return err;
 
     FILE* log = fopen( LOG, "w" );
-    fprintf( log, "digraph G {\n\trankdir=LR;\ngraph [dpi = 100];\n spline = ortho\n");
+    fprintf( log, "digraph G {\ngraph [dpi = 100];\n spline = ortho\n");//\trankdir=LR;\n
     int i = 1;
     tree_print( node->node, log, &i );
     fprintf(log, "}\n");
@@ -158,11 +158,11 @@ static int tree_print ( tree_t* tree, FILE* file, int* i ) {
         (tree->data));
         int tmp = *i;
         if ( tree->left ) {
-            fprintf( file, "\tnode%d->node%d [color = blue];\n", tmp, ++(*i));
+            fprintf( file, "\tnode%d->node%d [label = \"yes\",color = blue];\n", tmp, ++(*i));
             tree_print( tree-> left, file, i);
         }
         if ( tree->right ) {
-            fprintf( file, "\tnode%d->node%d [color = blue];\n", tmp, ++(*i));
+            fprintf( file, "\tnode%d->node%d [label = \"no\", color = blue];\n", tmp, ++(*i));
             tree_print( tree-> right, file, i);
         }
 
@@ -206,35 +206,51 @@ static int tree_dump ( tree_t* tree, FILE* dump ) {
 
     if ( i != 0 ) fprintf( dump, "\n}");
 
-    else fprintf( dump, " \n}");
+    else fprintf( dump, "\n}");
     
     return 0;
 
 }
 
-int tree_seek( node_t* node, tree_t* tree, int* i, el_t value, list_t *list, int n ){
+int tree_seek( node_t* node, tree_t* tree, /*int* i,*/ el_t value, list_t *list, int n ){
     
     int err = 0;
 
     if ( (err = node_verify( node )) != 0 ) return err;
     if ( !tree ) return NULL_TREE;
-    if ( !i ) return NULL_VALUE;
+    if ( (err = list_verify( list )) != 0 ) return err;
+    //if ( !i ) return NULL_VALUE;
 
-    if ( (*i) == 100) return 0;
-
-    
+    //if ( (*i) == 1) return 0;
 
     if ( !stricmp( tree->data, value)){
         //list_print(list);
-        (*i) = 100;
-        return 0;
+        //(*i) = 1;
+        return 1;//*i;
     }
-
-    list_add( list, n, tree->data);
-
-    if ( tree->left ) tree_seek( node, tree->left, i, value, list, n + 1);
-    if ( tree->right ) tree_seek( node, tree->right, i, value, list, n + 1);
-    list_remove(list, n + 1);
+    //list_add( list, n, tree->data );
+    //list_add( list, n, tree->data);
+    list_el_t seek_value = (list_el_t)calloc(1, sizeof(list_el_t_data));//{ tree->data, 0};
+    seek_value->data = tree->data;
+    seek_value->flag = 1;
+    if ( tree->left ) {
+        //list_add( list, n, tree->data);
+        if ( list->size == list->capacity ) list_realloc( list, 2*list->capacity);
+        list_add( list, n, seek_value );
+        int i = tree_seek( node, tree->left, /*i,*/ value, list, n + 1);
+        if ( i ) return i;
+        list_remove(list, n + 1);
+    }
+    if ( tree->right ) {
+        seek_value->flag = 0;
+        if ( list->size == list->capacity ) list_realloc( list, 2*list->capacity);
+        list_add( list, n, seek_value );
+        int i = tree_seek( node, tree->right, /*i,*/ value, list, n + 1);
+        if ( i ) return i;
+        list_remove(list, n + 1);
+    }
+    free(seek_value);
+    //list_remove(list, n + 1);
 
     return 0;
 }

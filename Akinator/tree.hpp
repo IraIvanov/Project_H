@@ -62,6 +62,6 @@ int graph_dump ( node_t* node );
 
 int do_dump ( node_t* node );
 
-int tree_seek( node_t* node, tree_t* tree, int* i, el_t value, list_t *list, int n );
+int tree_seek( node_t* node, tree_t* tree, /*int* i,*/ el_t value, list_t *list, int n );
 
 #endif
