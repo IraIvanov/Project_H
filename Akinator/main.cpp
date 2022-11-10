@@ -22,10 +22,12 @@ int main() {
     while ( 1 ) {
 
         printf( "What do you wanna do?\n[P]lay, [S]how tree, [C]ompare, [G]et definition, [E]xit.\n");
+        system ( " echo \"What do you wanna do?\n\" | festival --tts ");
         scanf( "%s", string );
         while( stricmp(string, "P") && stricmp(string, "S") && stricmp(string, "C") && stricmp(string, "G") && stricmp(string, "E") ) {
         
             printf( "Sorry, I don't understand\n");
+            system ( " echo \"Sorry, I don't understand\n\" | festival --tts ");
             scanf( "%s", string);
         
         }

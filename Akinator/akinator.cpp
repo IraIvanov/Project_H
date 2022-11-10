@@ -4,7 +4,9 @@
 #include <string.h>
 #include "akinator.hpp"
 #include "io.hpp"
-#include  "stack.hpp"
+#include "stack.hpp"
+//#include </home/shorteststraw/libs/festival/src/include/festival.h>
+#define cat( x, y ) x ## y
 
 int upload ( node_t* node, FILE* file ) {
 
@@ -75,15 +77,24 @@ int game ( node_t* node/*, tree_t* tree*/, list_t* seek_list ){
 
     tree_t* tree = node->node;
     char* string = (char*)calloc(MAX_LINE, sizeof(char)), *swap_str;
+    char* help_string = NULL;
 
     while ( tree ) {        
         
-        printf( "It's %s ?\n [Y]es/[N]o?\n", tree->data);
+        printf( "It's %s ?\n[Y]es/[N]o?\n", tree->data);
+        help_string = (char*)calloc( 2*MAX_LINE, sizeof(char));
+        strcpy(help_string, " echo \"It's ");
+        strcat(help_string, tree->data);
+        strcat(help_string,  "?\n\" | festival --tts ");
+        system(help_string);
+        free(help_string);
+        //system ( " echo \"It's %s ?\n [Y]es/[N]o?\n\" | festival -tts ");
         scanf( "%s", string);
         
         while( stricmp(string, "Y") && stricmp(string, "N") ) {
         
             printf("Sorry, I don't understand, please type Y or N\n");
+            system ( " echo \"Sorry, I don't understand, please type Y or N\n\" | festival --tts ");
             scanf( "%s", string);
         
         }
@@ -92,6 +103,7 @@ int game ( node_t* node/*, tree_t* tree*/, list_t* seek_list ){
             
             if ( !tree->left ) {
                 printf( "Hahaha, as I expected\n");
+                system ( " echo \"Hahaha, as I expected\n\" | festival --tts ");
                 tree = NULL;
             }
 
@@ -104,6 +116,7 @@ int game ( node_t* node/*, tree_t* tree*/, list_t* seek_list ){
             if ( !tree->right ) {
 
                 printf( "So, who it's then ?\n");
+                system ( " echo \"So, who it's then ?\n\" | festival --tts ");
                 while(getchar() != '\n' ){};
                 scanf( "%[^\n]", string);
                 int i = 0;
@@ -111,6 +124,7 @@ int game ( node_t* node/*, tree_t* tree*/, list_t* seek_list ){
 
                 if ( i == 1 ){
                     printf( "This object already in database, here it's defenition:\n");
+                    system ( " echo \"This object already in database, here it's defenition:\n\" | festival --tts ");
                     list_print(seek_list);
                     list_free( seek_list );
                     tree = NULL;
@@ -120,6 +134,13 @@ int game ( node_t* node/*, tree_t* tree*/, list_t* seek_list ){
                     tree_append_right( node, tree, swap_str);
                     tree_append_left(node, tree, string);
                     printf( "How %s is different from %s.\nIt's ...", string, swap_str );
+                    help_string = (char*)calloc( 2*MAX_LINE, sizeof(char));
+                    strcpy(help_string, " echo \"How ");
+                    strcat(help_string, string);
+                    strcat(help_string,  " is different from?\n\" | festival --tts ");
+                    strcat(help_string, string);
+                    system(help_string);
+                    free(help_string);
                     free ( swap_str );
                     while(getchar() != '\n' ){};
                     scanf( "%[^\n]", string );
@@ -138,6 +159,8 @@ int game ( node_t* node/*, tree_t* tree*/, list_t* seek_list ){
 
     }
 
+    free( string );
+
     return 0;
 
 }
@@ -150,15 +173,35 @@ int show_def( node_t* node, list_t* seek_list ) {
 
     char* string = (char*)calloc( MAX_LINE, sizeof(char) );
     printf( "Who do you want to see?\n");
+    system ( " echo \"Who do you want to see?\n\" | festival --tts ");
     while(getchar() != '\n' ){};
     scanf( "%[^\n]", string);
     int i = 0;
     i = tree_seek( node, node->node, /*&i,*/ string, seek_list, 0);//printf( "%d\n", i = tree_seek( node, node->node, /*&i,*/ string, seek_list, 0));
 
     if ( i == 1 ) {
-        
+        char *help_string = NULL;    
+        int pos1 = (seek_list->next)[0];
         printf( "Here it's defenition:\n");
-        list_print(seek_list);
+        system ( " echo \"Here it's defenition:\n\" | festival --tts ");
+        //list_print(seek_list);
+        while ( pos1 != 0 ){
+            
+            help_string = (char*)calloc( 2*MAX_LINE, sizeof(char) );
+            strcpy(help_string, "  echo \"");
+            if ( (seek_list->data)[pos1]->flag == 0) { 
+                printf( "not ");
+                strcat(help_string, "not ");
+            }
+            strcat(help_string, (seek_list->data)[pos1]->data);
+            strcat( help_string, "\n\" | festival --tts ");
+            printf( "%s\n", (seek_list->data)[pos1]->data);
+            system( help_string );
+            free(help_string);
+            pos1 = (seek_list->next)[pos1];
+
+        }
+
         list_free( seek_list );
 
     } else printf( "Sorry, I don't know him\n");
