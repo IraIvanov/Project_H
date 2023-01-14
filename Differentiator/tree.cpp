@@ -207,11 +207,11 @@ int tree_pprint( tree_t* tree ) {
                 break;
             case DEG: printf("^");
                 break;
-            case LG: printf("l");
+            case LG: printf("ln");
                 break;
-            case COS: printf("c");
+            case COS: printf("cos");
                 break;
-            case SIN: printf("s");
+            case SIN: printf("sin");
                 break;
             default: return 0;
         }

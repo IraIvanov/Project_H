@@ -16,7 +16,7 @@
     };
 
     int is_var( int c );
-    int is_op( int c );
+    int is_op( char* str );
     int tree_upload( char* str, node_t* node );
     tree_t* _Diff ( const tree_t* node );
     node_t* Diff ( const node_t* src );

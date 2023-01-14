@@ -18,6 +18,10 @@ int is_var( int c ) {
         case 'x': return 1;
     
         case 'y': return 1;
+
+        case 'X': return 1;
+
+        case 'Y': return 1;
     
         default : return 0; 
 
@@ -27,9 +31,22 @@ int is_var( int c ) {
 
 }
 
-int is_op( int c ) {
+int is_op( char* str ) {
 
-    switch ( c ) {
+    char * s = (char*)calloc( 1024, sizeof(char) );
+
+    sscanf( str, "%[^()]", s );
+    printf( "%s\n", s);
+    if ( !stricmp( s, "+") ) return ADD;
+    if ( !stricmp( s, "-") ) return SUB;
+    if ( !stricmp( s, "/") ) return DIV;
+    if ( !stricmp( s, "*") ) return MUL;
+    if ( !stricmp( s, "^") ) return DEG;
+    if ( !stricmp( s, "ln") ) return LG;
+    if ( !stricmp( s, "cos") ) return COS;
+    if ( !stricmp( s, "sin") ) return SIN;
+
+    /*switch ( c ) {
 
         case '+': return ADD;
 
@@ -49,7 +66,7 @@ int is_op( int c ) {
 
         default: return 0;
     
-    }
+    }*/
 
     return 0;
 }
@@ -117,10 +134,28 @@ int tree_upload( char* str, node_t* node ) {
 
             } else {
 
-                if ( is_op( str[i] ) ) {
+                if ( is_op( str + i ) ) {
+                    
+                    int temp = 0;
+                    data->data.op = is_op(str + i);
+                    temp = data->data.op;
+                    switch ( temp ) {
 
-                    data->data.op = is_op(str[i]);
-                    i += 1;
+                        case ADD: i += 1;
+                            break;
+                        case SUB: i += 1;
+                            break;
+                        case DIV: i += 1;
+                            break;
+                        case MUL: i += 1;
+                            break;
+                        case DEG: i += 1;
+                            break;
+                        case LG: i += 2;
+                            break;
+                        default: i+= 3; 
+
+                    }
                     data->type = OP;
                     //printf("%c", data->data.op); 
 
@@ -380,3 +415,4 @@ node_t* Diff ( const node_t* src ) {
 
     return res;
 }
+
