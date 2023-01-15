@@ -1,6 +1,11 @@
 #ifndef DIFF_H_INCLUDED
 #define DIFF_H_INCLUDED
 
+#define TYPE( node ) node->data->type
+
+#define OP_DATA( node ) node->data->data.op
+
+#define NUM_DATA( node ) node->data->data.num
 
     enum operations {
         

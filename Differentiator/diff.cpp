@@ -8,8 +8,31 @@
 #include "diff.hpp"
 
 #define MOVE_OFFSET offset += 1 + skip_spaces( str + offset + 1 )
+
 #define RES_CTOR(dest) dest = (tree_t*)calloc( 1, sizeof( tree_t ) );\
                 dest->data = (el_t)calloc( 1, sizeof(element_type) );
+
+#define NODE_CPY( dest, src ) memcpy( dest->data, src->data, sizeof( element_type) );
+
+
+
+#define EPS 0.01 
+
+tree_t* node_cpy( tree_t* src ) {
+
+    tree_t* res = NULL;
+    RES_CTOR( res )
+    NODE_CPY( res, src )
+    if ( TYPE(src) == OP && OP_DATA(src) > DEG ) {
+        if ( src->left ) res->left = node_cpy( src->left );
+        if ( src->right ) res->right = node_cpy( src->right );
+    } else {
+        if ( src->left ) res->right = node_cpy( src->left );
+        if ( src->right ) res->left = node_cpy( src->right );
+    }
+
+    return res;
+}
 
 int is_var( int c ) {
 
@@ -36,38 +59,40 @@ int is_op( char* str ) {
     char * s = (char*)calloc( 1024, sizeof(char) );
 
     sscanf( str, "%[^()]", s );
-    printf( "%s\n", s);
-    if ( !stricmp( s, "+") ) return ADD;
-    if ( !stricmp( s, "-") ) return SUB;
-    if ( !stricmp( s, "/") ) return DIV;
-    if ( !stricmp( s, "*") ) return MUL;
-    if ( !stricmp( s, "^") ) return DEG;
-    if ( !stricmp( s, "ln") ) return LG;
-    if ( !stricmp( s, "cos") ) return COS;
-    if ( !stricmp( s, "sin") ) return SIN;
 
-    /*switch ( c ) {
-
-        case '+': return ADD;
-
-        case '-': return SUB;
-
-        case '*': return MUL;
-
-        case '/': return DIV;
-
-        case '^': return DEG;
-
-        case 'l': return LG;
-
-        case 's': return SIN;
-
-        case 'c': return COS;
-
-        default: return 0;
-    
-    }*/
-
+    if ( !stricmp( s, "+") ) {
+        free(s);
+        return ADD;
+    }
+    if ( !stricmp( s, "-") ) {
+        free(s);
+        return SUB;
+    }
+    if ( !stricmp( s, "/") ) {
+        free(s);
+        return DIV;
+    }
+    if ( !stricmp( s, "*") ){
+        free(s);
+        return MUL;
+    }
+    if ( !stricmp( s, "^") ){
+        free(s);
+        return DEG;
+    }
+    if ( !stricmp( s, "ln") ) {
+        free(s);
+        return LG;
+    }
+    if ( !stricmp( s, "cos") ) {
+        free(s);
+        return COS;
+    }
+    if ( !stricmp( s, "sin") ) {
+        free(s);
+        return SIN;
+    }
+    free(s);
     return 0;
 }
 
@@ -194,7 +219,7 @@ tree_t* _Diff ( const tree_t* node ) {
     tree_t* res = NULL, *left = NULL, *right = NULL;
 
     switch( node->data->type ) {
-
+ 
         case NUM: res = (tree_t*)calloc( 1, sizeof( tree_t ) );
             res->data = (el_t)calloc( 1, sizeof(element_type) );
             res->data->data.num = 0;
@@ -235,13 +260,15 @@ tree_t* _Diff ( const tree_t* node ) {
                 left->data->data.op = MUL;
                 left->data->type = OP;
                 left->left = _Diff( node->right );
-                left->right = node->left;
+                left->right = node_cpy( node->left );
+                //left->right = node->left;
                 res->right = (tree_t*)calloc( 1, sizeof( tree_t ) );
                 right = res->right;
                 right->data = (el_t)calloc( 1, sizeof(element_type) );
                 right->data->data.op = MUL;
                 right->data->type = OP;
-                right->left = node->right;
+                right->left = node_cpy( node->right );
+                //right->left = node->right;
                 right->right = _Diff( node->left );
                 return res;
             case DIV: res = (tree_t*)calloc( 1, sizeof( tree_t ) );
@@ -261,19 +288,23 @@ tree_t* _Diff ( const tree_t* node ) {
                 left->data->data.op = MUL;
                 left->data->type = OP;
                 left->left = _Diff( node->right );
-                left->right = node->left;
+                left->right = node_cpy( node->left ); 
+                //left->right = node->left;
                 right->data = (el_t)calloc( 1, sizeof(element_type) );
                 right->data->data.op = MUL;
                 right->data->type = OP;
-                right->left = node->right;
+                right->left = node_cpy( node->right );
+                //right->left = node->right;
                 right->right = _Diff( node->left );
                 res->right = (tree_t*)calloc( 1, sizeof( tree_t ) );
                 right = res->right;
                 right->data = (el_t)calloc( 1, sizeof(element_type) );
                 right->data->data.op = MUL;
                 right->data->type = OP;
-                right->left = node->left;
-                right->right = node->left;
+                right->left = node_cpy( node->left );
+                right->left = node_cpy( node->left );
+                //right->left = node->left;
+                //right->right = node->left;
                 return res;
             case LG: RES_CTOR ( res )
                 res->data->data.op = DIV;
@@ -287,7 +318,8 @@ tree_t* _Diff ( const tree_t* node ) {
                 left = left->left;
                 left->data->data.num = 1;
                 left->data->type = NUM;
-                res->right = node->right ;//comms
+                res->right = node_cpy( node->right );
+                //res->right = node->right ;//comms
                 return res;
             case DEG: RES_CTOR( res )
                 if( node->right->data->type == NUM ) {
@@ -298,13 +330,16 @@ tree_t* _Diff ( const tree_t* node ) {
                     left = res->left;
                     left->data->data.op = DEG;
                     left->data->type = OP;
-                    left->left = node->right;
-                    left->right = node->left;
+                    left->left = node_cpy( node->right );
+                    //left->left = node->right;
+                    left->right = node_cpy( node->left );
+                    //left->right = node->left;
                     RES_CTOR( res->right )
                     right = res->right;
                     right->data->data.op = LG;
                     right->data->type = OP;
-                    right->right = node->right;
+                    right->right = node_cpy( node->right );
+                    //right->right = node->right;
 
                 }   else if ( node->left->data->type == NUM ) {
 
@@ -314,13 +349,15 @@ tree_t* _Diff ( const tree_t* node ) {
                     left = res->left;
                     left->data->data.op = MUL;
                     left->data->type = OP;
-                    left->left = node->left;
+                    left->left = node_cpy( node->left );
+                    //left->left = node->left;
                     left->right = _Diff( node->right );
                     RES_CTOR( res->right )
                     right = res->right;
                     right->data->data.op = DEG;
                     right->data->type = OP;
-                    right->left = node->right;
+                    right->left = node_cpy( node->right );
+                    //right->left = node->right;
                     RES_CTOR( right->right );
                     right = right->right;
                     right->data->data.num = node->left->data->data.num - 1;
@@ -335,8 +372,10 @@ tree_t* _Diff ( const tree_t* node ) {
                     right = res->right;
                     right->data->data.op = DEG;
                     right->data->type = OP;
-                    right->right = node->left;
-                    right->left = node->right;
+                    right->right = node_cpy( node->left );
+                    right->left = node_cpy( node->right );
+                    //right->right = node->left;
+                    //right->left = node->right;
                     RES_CTOR( res->left )
                     left = res->left;
                     left->data->data.op = ADD;
@@ -351,16 +390,16 @@ tree_t* _Diff ( const tree_t* node ) {
                     RES_CTOR( left->right )
                     left->right->data->data.op = LG;
                     left->right->data->type = OP;
-                    left->right->right = node->right;
+                    left->right->right = node_cpy( node->right );
                     right->data->data.op = DIV;
                     right->data->type = OP;
-                    right->right = node->right;
+                    right->right = node_cpy( node->right );
                     RES_CTOR( right->left );
                     left = right->left;
                     left->data->data.op = MUL;
                     left->data->type = OP;
                     left->left = _Diff( node->right );
-                    left->right = node->left;
+                    left->right = node_cpy( node->left );
 
                 }
 
@@ -374,7 +413,7 @@ tree_t* _Diff ( const tree_t* node ) {
                 left = res->left;
                 left->data->data.op = COS;
                 left->data->type = OP;
-                left->right = node->right;
+                left->right = node_cpy(node->right);
                 return res;
             case COS:
                 RES_CTOR( res )
@@ -393,7 +432,7 @@ tree_t* _Diff ( const tree_t* node ) {
                 left = right->left;
                 left->data->data.op = SIN;
                 left->data->type = OP;
-                left->right = node->right;
+                left->right = node_cpy(node->right);
                 return res;
             default: return NULL; 
         }
@@ -410,9 +449,31 @@ node_t* Diff ( const node_t* src ) {
     node_t* res = NULL;
     res = (node_t*)calloc( 1, sizeof(node_t) );
     tree_ctor( res );
-    //free(res->node);
+    free(res->node);
     res->node = _Diff( src->node );
 
     return res;
 }
 
+int _fix_tree( node_t* node, tree_t* tree ) {
+
+    tree_t* left = tree->left, *right = tree->right;
+    if ( TYPE(tree) == OP && OP_DATA(tree) == MUL && ( (TYPE(left) == NUM && (NUM_DATA(left) - 0) <= EPS) || (TYPE(right) == NUM && (NUM_DATA(right) - 0) <= EPS) )  ) {
+
+        tree->left = NULL;
+        tree->right = NULL;
+        tree_dtor( node, left );
+        tree_dtor( node, right);
+        TYPE(tree) = NUM;
+        NUM_DATA( tree ) = 0;
+
+    }
+
+    return 0;
+}
+
+int fix ( node_t* node ) {
+
+
+
+}

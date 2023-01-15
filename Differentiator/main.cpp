@@ -16,6 +16,11 @@ int main() {
     node_t* res = Diff( &node );
     tree_pprint ( res->node );
     printf("\n");
+    tree_dtor( &node, node.node);
+    tree_pprint ( res->node );
+    printf("\n");
+    tree_dtor( res, res->node );
+    free(res);
     return 0;
 
 }

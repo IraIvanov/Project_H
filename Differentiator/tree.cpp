@@ -11,7 +11,7 @@ int node_verify( const node_t* node ) {
 
     if ( !node ) return NULL_NODE;
     if ( !(node -> node) ) return NULL_TREE;
-    if ( node->size <= 0 ) err += BAD_SIZE;
+    //if ( node->size <= 0 ) err += BAD_SIZE;
     if ( node->status != ALIVE ) err += BAD_STAT;
 
     return err;
@@ -91,7 +91,7 @@ int tree_dtor ( node_t* node, tree_t* tree ) {
     if ( tree -> left ) tree_dtor( node, tree->left );
     if ( tree -> right ) tree_dtor( node, tree->right );
     free(tree);
-    node -> size -= 1; 
+    //node -> size -= 1; 
 
     return 0;
 }
@@ -107,7 +107,7 @@ int leave_free ( node_t* node, tree_t* tree ) {
 
     free(tree->data);
     free(tree);
-    node -> size -= 1;
+    //node -> size -= 1;
 
     return 0;
 }
@@ -146,7 +146,7 @@ int do_dump ( const node_t* node ) {
 
 }
 
-
+ 
 int tree_print ( const tree_t* tree, FILE* file, int* i ) {
 
     if ( !tree ) return NULL_TREE;
@@ -220,7 +220,7 @@ int tree_pprint( tree_t* tree ) {
 
     if ( tree -> right ) { 
 
-        if ( (tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10))) || ( tree->data->type == OP && tree->data->data.op > DEG ))  {
+        if ( (tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10))) || ( tree->data->type == OP && tree->data->data.op >= DEG ))  {
             printf( "(" );
             tree_pprint( tree->right );
             printf( ")" );
@@ -234,53 +234,105 @@ int tree_pprint( tree_t* tree ) {
 int tree_rprint( tree_t* tree ) {
 
     //int op1 = 0, op2 = 0;
-    if ( tree -> right ) { 
+    if ( TYPE(tree) == OP && OP_DATA(tree) <= DEG ){
 
-        if ( tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10)) )  {
-            printf( "(" );
-            tree_pprint( tree->right );
-            printf( ")" );
-        } else tree_pprint( tree->right );
+        if ( tree -> right ) { 
 
-    }
-    
-    if ( (tree->data)->type == NUM ) printf( "%.2lf", (tree->data->data).num );
-    else if ( (tree->data)->type == OP ) {
-        //printf( "%c", (tree->data->data).op );
-        switch ( (tree->data->data).op ) {
+            if (( tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10)) ) || ( tree->data->type == OP && tree->data->data.op > DEG ))  {
+                printf( "(" );
+                tree_rprint( tree->right );
+                printf( ")" );
+            } else tree_rprint( tree->right );
 
-            case ADD: printf("+");
-                break;
-            case MUL: printf("*");
-                break;
-            case SUB: printf("-");
-                break;
-            case DIV: printf("/");
-                break;
-            case DEG: printf("^");
-                break;
-            case LG: printf("l");
-                break;
-            case COS: printf("c");
-                break;
-            case SIN: printf("s");
-                break;
-            default: return 0;
         }
+        
+        if ( (tree->data)->type == NUM ) printf( "%.2lf", (tree->data->data).num );
+        else if ( (tree->data)->type == OP ) {
+            //printf( "%c", (tree->data->data).op );
+            switch ( (tree->data->data).op ) {
+
+                case ADD: printf("+");
+                    break;
+                case MUL: printf("*");
+                    break;
+                case SUB: printf("-");
+                    break;
+                case DIV: printf("/");
+                    break;
+                case DEG: printf("^");
+                    break;
+                case LG: printf("ln");
+                    break;
+                case COS: printf("cos");
+                    break;
+                case SIN: printf("sin");
+                    break;
+                default: return 0;
+            }
+        }
+        else if ( (tree->data)->type == VAR ) printf( "%c", (tree->data->data).var );
+
+
+
+        if ( tree -> left ) {
+
+            if (( tree->data->type == OP && tree->left->data->type == OP && ( (tree->data->data.op / 10) > ( tree->left->data->data.op / 10)) ) || ( tree->data->type == OP && tree->data->data.op >= DEG )) {
+                printf( "(" );
+                tree_rprint( tree->left);
+                printf( ")" );
+            } else tree_rprint( tree->left);
+        }
+
+    } else {
+        
+        if ( tree -> left ) {
+
+            if (( tree->data->type == OP && tree->left->data->type == OP && ( (tree->data->data.op / 10) > ( tree->left->data->data.op / 10)) ) || ( tree->data->type == OP && tree->data->data.op > DEG )) {
+                printf( "(" );
+                tree_rprint( tree->left);
+                printf( ")" );
+            } else tree_rprint( tree->left);
+        }
+       
+        
+        if ( (tree->data)->type == NUM ) printf( "%.2lf", (tree->data->data).num );
+        else if ( (tree->data)->type == OP ) {
+            //printf( "%c", (tree->data->data).op );
+            switch ( (tree->data->data).op ) {
+
+                case ADD: printf("+");
+                    break;
+                case MUL: printf("*");
+                    break;
+                case SUB: printf("-");
+                    break;
+                case DIV: printf("/");
+                    break;
+                case DEG: printf("^");
+                    break;
+                case LG: printf("ln");
+                    break;
+                case COS: printf("cos");
+                    break;
+                case SIN: printf("sin");
+                    break;
+                default: return 0;
+            }
+        }
+        else if ( (tree->data)->type == VAR ) printf( "%c", (tree->data->data).var );
+
+        if ( tree -> right ) { 
+
+            if (( tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10)) ) || ( tree->data->type == OP && tree->data->data.op >= DEG ))  {
+                printf( "(" );
+                tree_rprint( tree->right );
+                printf( ")" );
+            } else tree_rprint( tree->right );
+
+        }
+
+       
     }
-    else if ( (tree->data)->type == VAR ) printf( "%c", (tree->data->data).var );
-
-
-
-    if ( tree -> left ) {
-
-        if ( tree->data->type == OP && tree->left->data->type == OP && ( (tree->data->data.op / 10) > ( tree->left->data->data.op / 10)) ) {
-            printf( "(" );
-            tree_pprint( tree->left);
-            printf( ")" );
-        } else tree_pprint( tree->left);
-    }
-
 
     return 0;
 }
