@@ -6,6 +6,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "diff.hpp"
+#include <math.h>
+
+#define EPS 0.01 
 
 #define MOVE_OFFSET offset += 1 + skip_spaces( str + offset + 1 )
 
@@ -14,9 +17,9 @@
 
 #define NODE_CPY( dest, src ) memcpy( dest->data, src->data, sizeof( element_type) );
 
+#define IS_OP( tree, oper ) TYPE(tree) == OP && OP_DATA(tree) == oper 
 
-
-#define EPS 0.01 
+#define IS_NUM( tree, val ) TYPE(tree) == NUM && abs(NUM_DATA(tree) - val ) < EPS 
 
 tree_t* node_cpy( tree_t* src ) {
 
@@ -302,7 +305,7 @@ tree_t* _Diff ( const tree_t* node ) {
                 right->data->data.op = MUL;
                 right->data->type = OP;
                 right->left = node_cpy( node->left );
-                right->left = node_cpy( node->left );
+                right->right = node_cpy( node->left );
                 //right->left = node->left;
                 //right->right = node->left;
                 return res;
@@ -447,6 +450,11 @@ tree_t* _Diff ( const tree_t* node ) {
 node_t* Diff ( const node_t* src ) {
 
     node_t* res = NULL;
+
+    int err = 0;
+
+    if ( (err = node_verify( src ))!= 0 ) return NULL;
+
     res = (node_t*)calloc( 1, sizeof(node_t) );
     tree_ctor( res );
     free(res->node);
@@ -455,25 +463,261 @@ node_t* Diff ( const node_t* src ) {
     return res;
 }
 
-int _fix_tree( node_t* node, tree_t* tree ) {
+int _const_erase( node_t* node, tree_t** tree ) {
 
-    tree_t* left = tree->left, *right = tree->right;
-    if ( TYPE(tree) == OP && OP_DATA(tree) == MUL && ( (TYPE(left) == NUM && (NUM_DATA(left) - 0) <= EPS) || (TYPE(right) == NUM && (NUM_DATA(right) - 0) <= EPS) )  ) {
+    tree_t* temp = NULL;
 
-        tree->left = NULL;
-        tree->right = NULL;
-        tree_dtor( node, left );
-        tree_dtor( node, right);
-        TYPE(tree) = NUM;
-        NUM_DATA( tree ) = 0;
+    if ( IS_OP( (*tree) , MUL) && IS_NUM((*tree)->right, 1)) {
 
+        temp = (*tree)->left;
+        tree_dtor(node, (*tree)->right );
+        free((*tree)->data);
+        free(*tree);
+        *tree = temp; 
+
+    } else if( IS_OP( (*tree) , MUL) && IS_NUM((*tree)->left, 1)) {
+
+        temp = (*tree)->right;
+        tree_dtor(node, (*tree)->left );
+        free((*tree)->data);
+        free(*tree);
+        *tree = temp; 
+
+    } else if( IS_OP( (*tree) , DEG) && IS_NUM((*tree)->right, 1)) {
+
+        temp = (*tree)->left;
+        tree_dtor(node, (*tree)->right );
+        free((*tree)->data);
+        free(*tree);
+        *tree = temp; 
+
+    } else if( IS_OP( (*tree) , MUL) && IS_NUM((*tree)->left, 0)) {
+
+        temp = (*tree)->left;
+        tree_dtor(node, (*tree)->right );
+        free((*tree)->data);
+        free(*tree);
+        *tree = temp; 
+
+    } else if( IS_OP( (*tree) , MUL) && IS_NUM((*tree)->right, 0)) {
+
+        temp = (*tree)->right;
+        tree_dtor(node, (*tree)->left );
+        free((*tree)->data);
+        free(*tree);
+        *tree = temp; 
+    } else if( TYPE((*tree)) == OP && OP_DATA((*tree)) <= DEG && TYPE(((*tree)->left)) == NUM && TYPE(((*tree)->right)) == NUM  ) {
+
+        double num = 0;
+        tree_t* left = (*tree)->left, *right = (*tree)->right;
+
+        switch (OP_DATA((*tree))) {
+        
+        case ADD: num = NUM_DATA(left) + NUM_DATA(right);
+            tree_dtor( node, left );
+            tree_dtor( node, right );
+            TYPE((*tree)) = NUM;
+            NUM_DATA((*tree)) = num;
+            (*tree)->left = NULL;
+            (*tree)->right = NULL; 
+            break;
+        
+        case SUB: num = NUM_DATA(left) - NUM_DATA(right);
+            tree_dtor( node, left );
+            tree_dtor( node, right );
+            (*tree)->left = NULL;
+            (*tree)->right = NULL;
+            TYPE((*tree)) = NUM;
+            NUM_DATA((*tree)) = num; 
+            break;
+
+        case MUL: num = NUM_DATA(left) * NUM_DATA(right);
+            tree_dtor( node, left );
+            tree_dtor( node, right );
+            TYPE((*tree)) = NUM;
+            NUM_DATA((*tree)) = num;
+            (*tree)->left = NULL;
+            (*tree)->right = NULL; 
+            break;
+        
+        case DIV: num = NUM_DATA(left) / NUM_DATA(right);
+            tree_dtor( node, left );
+            tree_dtor( node, right );
+            TYPE((*tree)) = NUM;
+            NUM_DATA((*tree)) = num;
+            (*tree)->left = NULL;
+            (*tree)->right = NULL; 
+            break;
+
+        case DEG: num = pow( NUM_DATA(left) , NUM_DATA(right) );
+            tree_dtor( node, left );
+            tree_dtor( node, right );
+            TYPE((*tree)) = NUM;
+            NUM_DATA((*tree)) = num;
+            (*tree)->left = NULL;
+            (*tree)->right = NULL; 
+            break;
+        
+        default:
+            break;
+        }
+
+    } else if( TYPE((*tree)) == OP && TYPE((*tree)->right) == NUM  ) {
+
+        double num = 0;
+        tree_t* right = (*tree)->right;
+
+        switch (OP_DATA((*tree))) {
+        
+        case COS: num = cos(NUM_DATA(right));
+            tree_dtor( node, right );
+            TYPE((*tree)) = NUM;
+            NUM_DATA((*tree)) = num;
+            (*tree)->right = NULL; 
+            break;
+        
+        case SIN: num = sin(NUM_DATA(right));
+            tree_dtor( node, right );
+            TYPE((*tree)) = NUM;
+            NUM_DATA((*tree)) = num;            
+            (*tree)->right = NULL; 
+            break;
+
+        case LG: num = log(NUM_DATA(right));
+            tree_dtor( node, right );
+            TYPE((*tree)) = NUM;
+            NUM_DATA((*tree)) = num;            
+            (*tree)->right = NULL; 
+            break;
+        
+        default:
+            break;
+        }
+
+    }
+
+    if ( (*tree)->left ) {
+        _const_erase( node, &((*tree)->left) );
+    }
+    if ( (*tree)->right ) {
+        _const_erase( node, &((*tree)->right) );
     }
 
     return 0;
 }
 
-int fix ( node_t* node ) {
+int const_erase ( node_t* node ) {
+
+    int err = 0;
+
+    if ( (err = node_verify( node ))!= 0 ) return err;
+
+    _const_erase( node, &(node->node) );
+    return 0;
+
+}
+
+int _tree_latex( tree_t* tree, FILE* file ) {
+
+    int flag = 0;
+
+     if ( IS_OP( tree, DIV ) ) {
+        fprintf( file, "\\frac{");
+        if ( tree -> left ) {
+
+            if ( (tree->data->type == OP && tree->left->data->type == OP && ( (tree->data->data.op / 10) > ( tree->left->data->data.op / 10))) && OP_DATA(tree) < DEG ) {
+                fprintf( file, "(" );
+                _tree_latex( tree->left, file);
+                fprintf( file, ")" );
+            } else _tree_latex( tree->left, file);
+
+            fprintf( file, "}{");
+
+             if ( tree -> right ) { 
+
+                if ( (tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10))) || ( tree->data->type == OP && tree->data->data.op >= DEG ))  {
+                    fprintf( file, "(" );
+                    _tree_latex( tree->right, file );
+                    fprintf( file, ")" );
+                } else _tree_latex( tree->right, file );
+
+            }
+
+            fprintf( file, "}" );
+
+        }
+    }
+
+    if ( tree -> left ) {
+
+        if ( (tree->data->type == OP && tree->left->data->type == OP && ( (tree->data->data.op / 10) > ( tree->left->data->data.op / 10))) || (tree->data->type == OP && tree->data->data.op > DEG) ) {
+            fprintf( file, "(" );
+            _tree_latex( tree->left, file);
+            fprintf( file, ")" );
+        } else _tree_latex( tree->left, file);
+    }
+
+    if ( (tree->data)->type == NUM ) fprintf( file, "%.2lf", (tree->data->data).num );
+    else if ( (tree->data)->type == OP ) {
+        //printf( "%c", (tree->data->data).op );
+        switch ( (tree->data->data).op ) {
+
+            case ADD: fprintf( file, "+" );
+                break;
+            case MUL: fprintf( file, "\\cdot" );
+                break;
+            case SUB: fprintf( file, "-" );
+                break;
+            case DIV:
+                break;
+            case DEG: fprintf( file, "^" );
+                flag = 1;
+                break;
+            case LG: fprintf( file, "\\ln");
+                flag = 1;
+                break;
+            case COS: fprintf( file, "\\cos");
+                flag = 1; 
+                break;
+            case SIN: fprintf( file, "\\sin");
+                flag = 1;
+                break;
+            default: return 0;
+        }
+    }
+    else if ( (tree->data)->type == VAR ) fprintf( file, "%c", (tree->data->data).var );
+
+    if ( tree -> right ) { 
+
+        if ( flag == 1 ) {
+
+            fprintf ( file, "{" );
+        }
+
+        if ( (tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10))) && OP_DATA(tree) < DEG)  {
+            fprintf( file, "(" );
+            _tree_latex( tree->right, file );
+            fprintf( file, ")" );
+        } else _tree_latex( tree->right, file );
+
+        if ( flag == 1 ) {
+            fprintf ( file, "}" );
+        }
+
+    }
 
 
+    return 0;
+}
+
+int tree_latex( node_t* node ) {
+
+    FILE* file = fopen( "topdf.tex", "w" );
+    _tree_latex( node->node, file );
+    fclose( file );
+    system( "pdflatex topdf.tex" );
+    system ( "rm *.tex" );
+
+    return 0;
 
 }

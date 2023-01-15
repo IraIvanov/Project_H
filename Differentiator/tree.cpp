@@ -154,15 +154,56 @@ int tree_print ( const tree_t* tree, FILE* file, int* i ) {
 
     if ( file ) {
 
-        fprintf( file, "\t node%d [shape=\"record\", style=\"rounded, filled\", fillcolor = \"#9d4cef\" label=\" %s \" ];\n", *i,\
+        char c = 0;
+
+        switch( TYPE(tree) ){
+
+            case OP: 
+
+                    switch ( (tree->data->data).op ) {
+
+                        case ADD: c = '+';
+                            break;
+                        case MUL: c = '*';
+                            break;
+                        case SUB: c = '-';
+                            break;
+                        case DIV: c = '/';
+                            break;
+                        case DEG: c = '^';
+                            break;
+                        case LG: c = 'l';
+                            break;
+                        case COS: c = 'c';
+                            break;
+                        case SIN: c = 's';
+                            break;
+                        default: return 0;
+                    }
+
+                    fprintf( file, "\t node%d [shape=\"record\", style=\"rounded, filled\", fillcolor = \"#9d4cef\" label=\" %c \" ];\n", *i,\
+                    c);
+                    break;
+            case VAR:
+                    c = tree->data->data.var; 
+                    fprintf( file, "\t node%d [shape=\"record\", style=\"rounded, filled\", fillcolor = \"#9d4cef\" label=\" %c \" ];\n", *i,\
+                    c);
+                    break;
+            case NUM: fprintf( file, "\t node%d [shape=\"record\", style=\"rounded, filled\", fillcolor = \"#9d4cef\" label=\" %.2lf \" ];\n", *i,\
+                    (tree->data->data.num));
+                    break;
+            default: return 0;
+        }
+
+        //fprintf( file, "\t node%d [shape=\"record\", style=\"rounded, filled\", fillcolor = \"#9d4cef\" label=\" %s \" ];\n", *i,\
         (tree->data));
         int tmp = *i;
         if ( tree->left ) {
-            fprintf( file, "\tnode%d->node%d [label = \"yes\",color = blue];\n", tmp, ++(*i));
+            fprintf( file, "\tnode%d->node%d ;\n", tmp, ++(*i));
             tree_print( tree-> left, file, i);
         }
         if ( tree->right ) {
-            fprintf( file, "\tnode%d->node%d [label = \"no\", color = blue];\n", tmp, ++(*i));
+            fprintf( file, "\tnode%d->node%d ;\n", tmp, ++(*i));
             tree_print( tree-> right, file, i);
         }
 
@@ -182,6 +223,7 @@ int tree_print ( const tree_t* tree, FILE* file, int* i ) {
 int tree_pprint( tree_t* tree ) {
 
     //int op1 = 0, op2 = 0;
+    if ( !tree ) return NULL_TREE;
 
     if ( tree -> left ) {
 
@@ -234,6 +276,8 @@ int tree_pprint( tree_t* tree ) {
 int tree_rprint( tree_t* tree ) {
 
     //int op1 = 0, op2 = 0;
+    if ( !tree ) return NULL_TREE;
+
     if ( TYPE(tree) == OP && OP_DATA(tree) <= DEG ){
 
         if ( tree -> right ) { 
@@ -369,43 +413,3 @@ static int tree_dump ( const tree_t* tree, FILE* dump ) {
     return 0;
 
 }
-
-/*int tree_seek( const node_t* node, const tree_t* tree, const el_t value, list_t *list, int n ){
-    
-    int err = 0;
-
-    if ( (err = node_verify( node )) != 0 ) return err;
-    if ( !tree ) return NULL_TREE;
-    if ( (err = list_verify( list )) != 0 ) return err;
-
-    if ( stricmp( tree->data, value) == 0 ){
-
-        return 1;
-
-    }
-
-    list_el_t seek_value = (list_el_t)calloc(1, sizeof(list_el_t_data));
-    seek_value->data = tree->data;
-    seek_value->flag = 1;
-    if ( tree->left ) {
-
-        if ( (list->size + 1) >= list->capacity ) list_realloc( list, 2*list->capacity);
-        list_add( list, n, seek_value );
-        int i = tree_seek( node, tree->left, value, list, n + 1);
-        if ( i ) return i;
-        list_remove(list, n + 1);
-
-    }
-    if ( tree->right ) {
-        seek_value->flag = 0;
-        if ( (list->size + 1) >= list->capacity ) list_realloc( list, 2*list->capacity);
-        list_add( list, n, seek_value );
-        int i = tree_seek( node, tree->right, value, list, n + 1);
-        if ( i ) return i;
-        list_remove(list, n + 1);
-    }
-    free(seek_value);
-    //list_remove(list, n + 1);
-
-    return 0;
-}*/

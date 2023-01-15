@@ -25,5 +25,7 @@
     int tree_upload( char* str, node_t* node );
     tree_t* _Diff ( const tree_t* node );
     node_t* Diff ( const node_t* src );
+    int const_erase ( node_t* node );
+    int tree_latex( node_t* node );
 
 #endif

@@ -14,13 +14,23 @@ int main() {
     tree_rprint( node.node );
     printf("\n");
     node_t* res = Diff( &node );
-    tree_pprint ( res->node );
-    printf("\n");
+    Diff( NULL );
     tree_dtor( &node, node.node);
     tree_pprint ( res->node );
     printf("\n");
+    graph_dump( res );
+    const_erase( res );
+    const_erase( res );
+    const_erase( res );
+    const_erase( NULL );
+    tree_pprint ( res->node );
+    printf("\n");
+    //tree_latex( res );
+    //printf("\n");
+    graph_dump( res );
     tree_dtor( res, res->node );
     free(res);
+    free(str);
     return 0;
 
 }
