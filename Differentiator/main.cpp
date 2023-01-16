@@ -22,10 +22,10 @@ int main() {
     const_erase( res );
     const_erase( res );
     const_erase( res );
-    const_erase( NULL );
+    const_erase( res );
     tree_pprint ( res->node );
     printf("\n");
-    //tree_latex( res );
+    tree_latex( res );
     //printf("\n");
     graph_dump( res );
     tree_dtor( res, res->node );

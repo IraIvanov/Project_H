@@ -11,8 +11,8 @@
         
         ADD = 1,
         SUB = 2,
-        MUL = 10,
-        DIV = 20,
+        MUL = 20,
+        DIV = 21,
         DEG = 30,
         LG  = 31,
         SIN = 32,
@@ -20,12 +20,12 @@
 
     };
 
-    int is_var( int c );
-    int is_op( char* str );
-    int tree_upload( char* str, node_t* node );
+    int is_var( const int c );
+    int is_op( const char* str );
+    int tree_upload( const char* str, node_t* node );
     tree_t* _Diff ( const tree_t* node );
     node_t* Diff ( const node_t* src );
     int const_erase ( node_t* node );
-    int tree_latex( node_t* node );
+    int tree_latex( const node_t* node );
 
 #endif

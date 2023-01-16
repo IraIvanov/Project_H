@@ -21,7 +21,7 @@
 
 #define IS_NUM( tree, val ) TYPE(tree) == NUM && abs(NUM_DATA(tree) - val ) < EPS 
 
-tree_t* node_cpy( tree_t* src ) {
+tree_t* node_cpy( const tree_t* src ) {
 
     tree_t* res = NULL;
     RES_CTOR( res )
@@ -37,7 +37,7 @@ tree_t* node_cpy( tree_t* src ) {
     return res;
 }
 
-int is_var( int c ) {
+int is_var( const int c ) {
 
     switch( c ) {
 
@@ -57,7 +57,9 @@ int is_var( int c ) {
 
 }
 
-int is_op( char* str ) {
+int is_op( const char* str ) {
+
+    if ( !str ) return NULL_VALUE;
 
     char * s = (char*)calloc( 1024, sizeof(char) );
 
@@ -101,7 +103,7 @@ int is_op( char* str ) {
 
 //this function has possible segfaults, be careful, it's demo  
 
-int tree_upload( char* str, node_t* node ) {
+int tree_upload( const char* str, node_t* node ) {
 
 
     int err = 0, i = 0;
@@ -617,7 +619,7 @@ int const_erase ( node_t* node ) {
 
 }
 
-int _tree_latex( tree_t* tree, FILE* file ) {
+int _tree_latex( const tree_t* tree, FILE* file ) {
 
     int flag = 0;
 
@@ -646,77 +648,192 @@ int _tree_latex( tree_t* tree, FILE* file ) {
             fprintf( file, "}" );
 
         }
-    }
+    } else {
 
-    if ( tree -> left ) {
+        if ( tree -> left ) {
 
-        if ( (tree->data->type == OP && tree->left->data->type == OP && ( (tree->data->data.op / 10) > ( tree->left->data->data.op / 10))) || (tree->data->type == OP && tree->data->data.op > DEG) ) {
-            fprintf( file, "(" );
-            _tree_latex( tree->left, file);
-            fprintf( file, ")" );
-        } else _tree_latex( tree->left, file);
-    }
-
-    if ( (tree->data)->type == NUM ) fprintf( file, "%.2lf", (tree->data->data).num );
-    else if ( (tree->data)->type == OP ) {
-        //printf( "%c", (tree->data->data).op );
-        switch ( (tree->data->data).op ) {
-
-            case ADD: fprintf( file, "+" );
-                break;
-            case MUL: fprintf( file, "\\cdot" );
-                break;
-            case SUB: fprintf( file, "-" );
-                break;
-            case DIV:
-                break;
-            case DEG: fprintf( file, "^" );
-                flag = 1;
-                break;
-            case LG: fprintf( file, "\\ln");
-                flag = 1;
-                break;
-            case COS: fprintf( file, "\\cos");
-                flag = 1; 
-                break;
-            case SIN: fprintf( file, "\\sin");
-                flag = 1;
-                break;
-            default: return 0;
-        }
-    }
-    else if ( (tree->data)->type == VAR ) fprintf( file, "%c", (tree->data->data).var );
-
-    if ( tree -> right ) { 
-
-        if ( flag == 1 ) {
-
-            fprintf ( file, "{" );
+            if ( (tree->data->type == OP && tree->left->data->type == OP && ( (tree->data->data.op / 10) > ( tree->left->data->data.op / 10))) || (tree->data->type == OP && tree->data->data.op > DEG) ) {
+                fprintf( file, "(" );
+                _tree_latex( tree->left, file);
+                fprintf( file, ")" );
+            } else _tree_latex( tree->left, file);
         }
 
-        if ( (tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10))) && OP_DATA(tree) < DEG)  {
-            fprintf( file, "(" );
-            _tree_latex( tree->right, file );
-            fprintf( file, ")" );
-        } else _tree_latex( tree->right, file );
+        if ( (tree->data)->type == NUM ) fprintf( file, "%.2lf", (tree->data->data).num );
+        else if ( (tree->data)->type == OP ) {
+            //printf( "%c", (tree->data->data).op );
+            switch ( (tree->data->data).op ) {
 
-        if ( flag == 1 ) {
-            fprintf ( file, "}" );
+                case ADD: fprintf( file, "+" );
+                    break;
+                case MUL: fprintf( file, "\\cdot " ); 
+                    break;
+                case SUB: fprintf( file, "-" );
+                    break;
+                case DIV:
+                    break;
+                case DEG: fprintf( file, "^" );
+                    flag = 1;
+                    break;
+                case LG: fprintf( file, "\\ln");
+                    flag = 1;
+                    break;
+                case COS: fprintf( file, "\\cos");
+                    flag = 1; 
+                    break;
+                case SIN: fprintf( file, "\\sin");
+                    flag = 1;
+                    break;
+                default: return 0;
+            }
         }
+        else if ( (tree->data)->type == VAR ) fprintf( file, "%c", (tree->data->data).var );
 
+        if ( tree -> right ) { 
+
+            if ( flag == 1 ) {
+
+                fprintf ( file, "{" );
+            }
+
+            if ( (tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10))) && OP_DATA(tree) < DEG)  {
+                fprintf( file, "(" );
+                _tree_latex( tree->right, file );
+                fprintf( file, ")" );
+            } else _tree_latex( tree->right, file );
+
+            if ( flag == 1 ) {
+                fprintf ( file, "}" );
+            }
+
+        }
     }
-
 
     return 0;
 }
 
-int tree_latex( node_t* node ) {
+int r_tree_latex( const tree_t* tree, FILE* file ) {
+
+    int flag = 0;
+
+    tree_t* left = NULL, *right = NULL;
+
+    if ( TYPE(tree) == OP && OP_DATA(tree) > DEG ) {
+
+        left = tree->left;
+        right = tree->right;
+    } else {
+
+        left = tree->right;
+        right = tree->left;
+
+    }
+
+    if ( IS_OP( tree, DIV ) ) {
+        fprintf( file, "\\frac{");
+        if ( left ) {
+
+            if ( (tree->data->type == OP && left->data->type == OP && ( (tree->data->data.op / 10) > ( left->data->data.op / 10))) && OP_DATA(tree) < DEG ) {
+                fprintf( file, "(" );
+                r_tree_latex( left, file);
+                fprintf( file, ")" );
+            } else r_tree_latex( left, file);
+
+            fprintf( file, "}{");
+
+             if ( right ) { 
+
+                if ( (tree->data->type == OP && right->data->type == OP && ( (tree->data->data.op / 10) > ( right->data->data.op / 10))) || ( tree->data->type == OP && tree->data->data.op >= DEG ))  {
+                    fprintf( file, "(" );
+                    r_tree_latex( right, file );
+                    fprintf( file, ")" );
+                } else r_tree_latex( right, file );
+
+            }
+
+            fprintf( file, "}" );
+
+        }
+    } else {
+
+        if ( left ) {
+
+            if ( (tree->data->type == OP && left->data->type == OP && ( (tree->data->data.op / 10) > ( left->data->data.op / 10))) || (tree->data->type == OP && tree->data->data.op > DEG) ) {
+                fprintf( file, "(" );
+                r_tree_latex( left, file);
+                fprintf( file, ")" );
+            } else r_tree_latex( left, file);
+        }
+
+        if ( (tree->data)->type == NUM ) fprintf( file, "%.2lf", (tree->data->data).num );
+        else if ( (tree->data)->type == OP ) {
+            //printf( "%c", (tree->data->data).op );
+            switch ( (tree->data->data).op ) {
+
+                case ADD: fprintf( file, "+" );
+                    break;
+                case MUL: fprintf( file, "\\cdot " ); 
+                    break;
+                case SUB: fprintf( file, "-" );
+                    break;
+                case DIV:
+                    break;
+                case DEG: fprintf( file, "^" );
+                    flag = 1;
+                    break;
+                case LG: fprintf( file, "\\ln");
+                    flag = 1;
+                    break;
+                case COS: fprintf( file, "\\cos");
+                    flag = 1; 
+                    break;
+                case SIN: fprintf( file, "\\sin");
+                    flag = 1;
+                    break;
+                default: return 0;
+            }
+        }
+        else if ( (tree->data)->type == VAR ) fprintf( file, "%c", (tree->data->data).var );
+
+        if ( right ) { 
+
+            if ( flag == 1 ) {
+
+                fprintf ( file, "{" );
+            }
+
+            if ( (tree->data->type == OP && right->data->type == OP && ( (tree->data->data.op / 10) > ( right->data->data.op / 10))) && OP_DATA(tree) < DEG)  {
+                fprintf( file, "(" );
+                _tree_latex( right, file );
+                fprintf( file, ")" );
+            } else _tree_latex( right, file );
+
+            if ( flag == 1 ) {
+                fprintf ( file, "}" );
+            }
+
+        }
+    }
+
+    return 0;
+}
+
+
+int tree_latex( const node_t* node ) {
+
+    int err = 0;
+
+    if ( ( err = node_verify( node ) ) != 0  ) return err;
 
     FILE* file = fopen( "topdf.tex", "w" );
+    fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n$ f'(x) =" );
     _tree_latex( node->node, file );
+    fprintf( file, "$\n\\end{document}");
     fclose( file );
     system( "pdflatex topdf.tex" );
-    system ( "rm *.tex" );
+    system( "rm *.tex" );
+    system( "rm *.aux" ); 
+    system( "rm *.log" );
 
     return 0;
 

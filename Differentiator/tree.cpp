@@ -127,6 +127,7 @@ int graph_dump ( const node_t* node ) {
     fprintf(log, "}\n");
     fclose( log );
     system("dot -Tsvg log.txt > tree.svg");
+    system( "rm log.txt" ); 
     return 0;
 
 }
@@ -220,7 +221,7 @@ int tree_print ( const tree_t* tree, FILE* file, int* i ) {
 
 }
 
-int tree_pprint( tree_t* tree ) {
+int tree_pprint( const tree_t* tree ) {
 
     //int op1 = 0, op2 = 0;
     if ( !tree ) return NULL_TREE;
@@ -273,10 +274,10 @@ int tree_pprint( tree_t* tree ) {
     return 0;
 }
 
-int tree_rprint( tree_t* tree ) {
+int tree_rprint( const tree_t* tree ) {
 
     //int op1 = 0, op2 = 0;
-    if ( !tree ) return NULL_TREE;
+    if ( !tree ) return NULL_TREE; 
 
     if ( TYPE(tree) == OP && OP_DATA(tree) <= DEG ){
 

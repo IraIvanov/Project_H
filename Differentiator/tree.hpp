@@ -86,9 +86,9 @@ int do_dump ( const node_t* node );
 
 int tree_print ( const tree_t* tree, FILE* file, int* i);
 
-int tree_pprint( tree_t* tree );
+int tree_pprint( const tree_t* tree );
 
-int tree_rprint( tree_t* tree );
+int tree_rprint( const tree_t* tree );
 //int tree_seek( const node_t* node, const tree_t* tree, /*int* i,*/const el_t value, list_t *list, int n );
 
 #endif
