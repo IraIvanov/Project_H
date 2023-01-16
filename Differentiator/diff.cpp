@@ -829,25 +829,17 @@ int tree_latex( const node_t* node, const node_t* src ) {
     if ( ( err = node_verify( node ) ) != 0  ) return err;
     if ( ( err = node_verify( src ) ) != 0  ) return err;
     
-    if ( (pid = fork()) == 0 ){
-        close( 1 );
-        FILE* file = fopen( "topdf.tex", "w" );
-        fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n$ (" );
-        r_tree_latex( src->node, file );
-        fprintf( file, " )' = ");
-        _tree_latex( node->node, file );
-        fprintf( file, "$\n\\end{document}");
-        fclose( file );
-        system( "pdflatex topdf.tex" );
-        system( "rm *.tex" );
-        system( "rm *.aux" ); 
-        system( "rm *.log" );
-    } else {
-
-        int status = 0;
-        waitpid(pid, &status, 0);
-
-    }
+      FILE* file = fopen( "topdf.tex", "w" );
+      fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n$ (" );
+      r_tree_latex( src->node, file );
+      fprintf( file, " )' = ");
+      _tree_latex( node->node, file );
+      fprintf( file, "$\n\\end{document}");
+      fclose( file );
+      system( "pdflatex topdf.tex" );
+      system( "rm *.tex" );
+      system( "rm *.aux" ); 
+      system( "rm *.log" );
 
     return 0;
 
