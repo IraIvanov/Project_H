@@ -26,6 +26,6 @@
     tree_t* _Diff ( const tree_t* node );
     node_t* Diff ( const node_t* src );
     int const_erase ( node_t* node );
-    int tree_latex( const node_t* node );
+    int tree_latex( const node_t* node, const node_t* src );
 
 #endif

@@ -15,7 +15,6 @@ int main() {
     printf("\n");
     node_t* res = Diff( &node );
     Diff( NULL );
-    tree_dtor( &node, node.node);
     tree_pprint ( res->node );
     printf("\n");
     graph_dump( res );
@@ -25,10 +24,11 @@ int main() {
     const_erase( res );
     tree_pprint ( res->node );
     printf("\n");
-    tree_latex( res );
+    tree_latex( res, &node );
     //printf("\n");
     graph_dump( res );
     tree_dtor( res, res->node );
+    tree_dtor( &node, node.node);
     free(res);
     free(str);
     return 0;

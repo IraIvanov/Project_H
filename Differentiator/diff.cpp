@@ -7,6 +7,8 @@
 #include <ctype.h>
 #include "diff.hpp"
 #include <math.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #define EPS 0.01 
 
@@ -819,21 +821,33 @@ int r_tree_latex( const tree_t* tree, FILE* file ) {
 }
 
 
-int tree_latex( const node_t* node ) {
+int tree_latex( const node_t* node, const node_t* src ) {
 
     int err = 0;
+    int pid = 0;
 
     if ( ( err = node_verify( node ) ) != 0  ) return err;
+    if ( ( err = node_verify( src ) ) != 0  ) return err;
+    
+    if ( (pid = fork()) == 0 ){
+        close( 1 );
+        FILE* file = fopen( "topdf.tex", "w" );
+        fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n$ (" );
+        r_tree_latex( src->node, file );
+        fprintf( file, " )' = ");
+        _tree_latex( node->node, file );
+        fprintf( file, "$\n\\end{document}");
+        fclose( file );
+        system( "pdflatex topdf.tex" );
+        system( "rm *.tex" );
+        system( "rm *.aux" ); 
+        system( "rm *.log" );
+    } else {
 
-    FILE* file = fopen( "topdf.tex", "w" );
-    fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n$ f'(x) =" );
-    _tree_latex( node->node, file );
-    fprintf( file, "$\n\\end{document}");
-    fclose( file );
-    system( "pdflatex topdf.tex" );
-    system( "rm *.tex" );
-    system( "rm *.aux" ); 
-    system( "rm *.log" );
+        int status = 0;
+        waitpid(pid, &status, 0);
+
+    }
 
     return 0;
 
