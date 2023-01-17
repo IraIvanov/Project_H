@@ -620,7 +620,7 @@ int const_erase ( node_t* node ) {
     hight = get_hight( node->node, 1 );
 
     for ( int i = 0; i < hight; i++) _const_erase( node, &(node->node) );
-    
+
     return 0;
 
 }
@@ -728,6 +728,7 @@ static int r_tree_latex( const tree_t* tree, FILE* file ) {
 
         left = tree->left;
         right = tree->right;
+
     } else {
 
         left = tree->right;
@@ -810,9 +811,9 @@ static int r_tree_latex( const tree_t* tree, FILE* file ) {
 
             if ( (tree->data->type == OP && right->data->type == OP && ( (tree->data->data.op / 10) > ( right->data->data.op / 10))) && OP_DATA(tree) < DEG)  {
                 fprintf( file, "(" );
-                _tree_latex( right, file );
+                r_tree_latex( right, file );
                 fprintf( file, ")" );
-            } else _tree_latex( right, file );
+            } else r_tree_latex( right, file );
 
             if ( flag == 1 ) {
                 fprintf ( file, "}" );
