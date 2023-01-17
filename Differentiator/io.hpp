@@ -16,6 +16,6 @@ int buf_read( char** code, FILE* input, size_t* size);
 int stricmp(const char* str1, const char* str2);
 int cmd_get(char *code, char***cmd, size_t* size, const size_t code_size);
 int cmd_print(const char** cmd, const size_t cmd_size);
-int skip_spaces(char *str);
+int skip_spaces( const char *str);
 
 #endif

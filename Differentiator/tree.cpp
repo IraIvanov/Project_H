@@ -414,3 +414,16 @@ static int tree_dump ( const tree_t* tree, FILE* dump ) {
     return 0;
 
 }
+
+int get_hight( tree_t* node, int i ) {
+
+    if ( !node ) return NULL_TREE;
+    
+    int left = i, right = i; 
+
+    if ( node->left ) left = get_hight( node->left, i++ ); 
+    if ( node->right ) right = get_hight( node->right, i++ ); 
+    if ( left > right ) return left;
+    else return right;
+
+}

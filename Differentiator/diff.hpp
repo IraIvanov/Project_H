@@ -7,6 +7,11 @@
 
 #define NUM_DATA( node ) node->data->data.num
 
+#define RES_CTOR(dest) dest = (tree_t*)calloc( 1, sizeof( tree_t ) );\
+                dest->data = (el_t)calloc( 1, sizeof(element_type) );
+
+#define NODE_CPY( dest, src ) memcpy( dest->data, src->data, sizeof( element_type) );
+
     enum operations {
         
         ADD = 1,
@@ -23,7 +28,6 @@
     int is_var( const int c );
     int is_op( const char* str );
     int tree_upload( const char* str, node_t* node );
-    tree_t* _Diff ( const tree_t* node );
     node_t* Diff ( const node_t* src );
     int const_erase ( node_t* node );
     int tree_latex( const node_t* node, const node_t* src );

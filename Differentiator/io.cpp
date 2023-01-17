@@ -117,7 +117,7 @@ int stricmp(const char* str1, const char* str2) {
     return 0;
 }
 
-int skip_spaces(char *str){
+int skip_spaces( const char *str){
     
     int i = 0;
     while( str[i] != '\0' && isspace(str[i])) i++;

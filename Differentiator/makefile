@@ -3,8 +3,8 @@ CFLAGS= -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop
 
 all: test clean
 
-test: tree.o main.o io.o stack.o tree.o diff.o
-		$(CC) $(CFLAGS) -o test main.o tree.o io.o stack.o diff.o
+test: tree.o main.o io.o stack.o tree.o diff.o lexer.o
+		$(CC) $(CFLAGS) -o test main.o tree.o io.o stack.o diff.o lexer.o
 
 clean:
 	rm *.o

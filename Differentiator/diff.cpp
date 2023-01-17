@@ -14,11 +14,6 @@
 
 #define MOVE_OFFSET offset += 1 + skip_spaces( str + offset + 1 )
 
-#define RES_CTOR(dest) dest = (tree_t*)calloc( 1, sizeof( tree_t ) );\
-                dest->data = (el_t)calloc( 1, sizeof(element_type) );
-
-#define NODE_CPY( dest, src ) memcpy( dest->data, src->data, sizeof( element_type) );
-
 #define IS_OP( tree, oper ) TYPE(tree) == OP && OP_DATA(tree) == oper 
 
 #define IS_NUM( tree, val ) TYPE(tree) == NUM && abs(NUM_DATA(tree) - val ) < EPS 
@@ -221,9 +216,11 @@ int tree_upload( const char* str, node_t* node ) {
 }
 
 
-tree_t* _Diff ( const tree_t* node ) {
+static tree_t* _Diff ( const tree_t* node ) {
 
     tree_t* res = NULL, *left = NULL, *right = NULL;
+    
+    if ( !node ) return NULL;
 
     switch( node->data->type ) {
  
@@ -467,9 +464,13 @@ node_t* Diff ( const node_t* src ) {
     return res;
 }
 
-int _const_erase( node_t* node, tree_t** tree ) {
+static int _const_erase( node_t* node, tree_t** tree ) {
 
     tree_t* temp = NULL;
+    int err = 0;
+
+    if ( (err = node_verify( node )) != 0 ) return err;
+    if ( !tree ) return NULL_TREE;
 
     if ( IS_OP( (*tree) , MUL) && IS_NUM((*tree)->right, 1)) {
 
@@ -612,16 +613,19 @@ int _const_erase( node_t* node, tree_t** tree ) {
 
 int const_erase ( node_t* node ) {
 
-    int err = 0;
+    int err = 0, hight = 0;
 
     if ( (err = node_verify( node ))!= 0 ) return err;
 
-    _const_erase( node, &(node->node) );
+    hight = get_hight( node->node, 1 );
+
+    for ( int i = 0; i < hight; i++) _const_erase( node, &(node->node) );
+    
     return 0;
 
 }
 
-int _tree_latex( const tree_t* tree, FILE* file ) {
+static int _tree_latex( const tree_t* tree, FILE* file ) {
 
     int flag = 0;
 
@@ -714,7 +718,7 @@ int _tree_latex( const tree_t* tree, FILE* file ) {
     return 0;
 }
 
-int r_tree_latex( const tree_t* tree, FILE* file ) {
+static int r_tree_latex( const tree_t* tree, FILE* file ) {
 
     int flag = 0;
 
@@ -829,17 +833,24 @@ int tree_latex( const node_t* node, const node_t* src ) {
     if ( ( err = node_verify( node ) ) != 0  ) return err;
     if ( ( err = node_verify( src ) ) != 0  ) return err;
     
-      FILE* file = fopen( "topdf.tex", "w" );
-      fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n$ (" );
-      r_tree_latex( src->node, file );
-      fprintf( file, " )' = ");
-      _tree_latex( node->node, file );
-      fprintf( file, "$\n\\end{document}");
-      fclose( file );
-      system( "pdflatex topdf.tex" );
-      system( "rm *.tex" );
-      system( "rm *.aux" ); 
-      system( "rm *.log" );
+    if ( (pid = fork()) == 0 ){
+        FILE* file = fopen( "topdf.tex", "w" );
+        fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n$ (" );
+        r_tree_latex( src->node, file );
+        fprintf( file, " )' = ");
+        _tree_latex( node->node, file );
+        fprintf( file, "$\n\\end{document}");
+        fclose( file );
+        system( "pdflatex topdf.tex" );
+        system( "rm *.tex" );
+        system( "rm *.aux" ); 
+        system( "rm *.log" );
+    } else {
+
+        int status = 0;
+        waitpid(pid, &status, 0);
+
+    }
 
     return 0;
 

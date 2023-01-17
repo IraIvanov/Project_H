@@ -8,3 +8,5 @@ Undefined control sequence.
 $ f'(x) = (2.00\cdot x\cdot \ln{\cos{x}}+\frac{(0.00-\sin{x})\cdot x^{2.00}}{\cos{x}})\cdot \cos{x}^{x^{2.00}}$
 
 \end{document}
+
+

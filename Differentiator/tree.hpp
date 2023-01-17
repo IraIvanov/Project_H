@@ -89,6 +89,7 @@ int tree_print ( const tree_t* tree, FILE* file, int* i);
 int tree_pprint( const tree_t* tree );
 
 int tree_rprint( const tree_t* tree );
-//int tree_seek( const node_t* node, const tree_t* tree, /*int* i,*/const el_t value, list_t *list, int n );
+
+int get_hight( tree_t* node, int i );
 
 #endif

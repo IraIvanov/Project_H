@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "tree.hpp"
 #include "diff.hpp"
+#include "lexer.hpp"
 
 int main() {
 
@@ -10,23 +11,16 @@ int main() {
     printf( "%s\n", str);
     node_t node = {};
     tree_ctor( &node );
-    tree_upload( str, &node );
+    get_tree( str, &node );
     tree_rprint( node.node );
     printf("\n");
     node_t* res = Diff( &node );
     Diff( NULL );
-    tree_pprint ( res->node );
-    printf("\n");
     graph_dump( res );
-    const_erase( res );
-    const_erase( res );
-    const_erase( res );
     const_erase( res );
     tree_pprint ( res->node );
     printf("\n");
     tree_latex( res, &node );
-    //printf("\n");
-    graph_dump( res );
     tree_dtor( res, res->node );
     tree_dtor( &node, node.node);
     free(res);
