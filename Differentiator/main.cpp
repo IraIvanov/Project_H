@@ -6,12 +6,21 @@
 
 int main() {
 
-    char* str = (char*)calloc( 1024, sizeof(char) ); 
-    scanf( "%s", str );
+    char* str = (char*)calloc( MAX_SIZE, sizeof(char) ); 
+    fgets( str, MAX_SIZE, stdin );
     printf( "%s\n", str);
     node_t node = {};
     tree_ctor( &node );
-    get_tree( str, &node );
+    int err = get_tree( str, &node );
+    
+    if ( err ) {
+
+        free( str );
+        tree_dtor( &node, node.node );    
+        return 0;
+
+    }
+
     tree_rprint( node.node );
     printf("\n");
     node_t* res = Diff( &node );

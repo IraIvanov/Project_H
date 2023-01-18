@@ -28,8 +28,6 @@ priority:
 #include "diff.hpp"
 #include "io.hpp"
 
-#define MAX_SIZE 1024
-
 #define OK 0
 
 #define BAD 1
@@ -71,7 +69,8 @@ static tree_t* GetG( const char** s ) {
 
 tree_t* GetE( const char** s ) {
 
-    printf( "%s\n", *s );
+    //printf( "%s\n", *s );
+    (*s) += skip_spaces( *s );
     tree_t* res = GetT( s );
 
     (*s) += skip_spaces( *s );
@@ -227,7 +226,14 @@ tree_t* GetP( const char** s ) {
         (*s)++;
         res = GetE( s );
         (*s) += skip_spaces( *s );
-        assert( **s == ')' );
+
+        if ( **s != ')' ) {
+
+            flag = BAD;
+            return NULL;
+
+        }
+        //assert( **s == ')' );
         (*s)++;
 
     } else res = GetN( s ); 
@@ -290,6 +296,8 @@ int get_tree( const char* str, node_t* node ) {
 
     node->node = GetG( (const char**)&str );
 
-    return 0;
+    if ( flag == BAD ) err = BAD;
+
+    return err;
 
 }

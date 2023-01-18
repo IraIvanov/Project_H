@@ -3,4 +3,6 @@
 
 int get_tree( const char* str, node_t* node );
 
+#define MAX_SIZE 1024
+
 #endif
