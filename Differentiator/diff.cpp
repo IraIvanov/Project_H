@@ -511,7 +511,7 @@ static int _const_erase( node_t* node, tree_t** tree ) {
         free((*tree)->data);
         free(*tree);
         *tree = temp; 
-    } else if( TYPE((*tree)) == OP && OP_DATA((*tree)) <= DEG && TYPE(((*tree)->left)) == NUM && TYPE(((*tree)->right)) == NUM  ) {
+    } else if( TYPE((*tree)) == OP && OP_DATA((*tree)) <= DEG && (*tree)->left && TYPE(((*tree)->left)) == NUM && TYPE(((*tree)->right)) == NUM  ) {
 
         double num = 0;
         tree_t* left = (*tree)->left, *right = (*tree)->right;
@@ -599,6 +599,11 @@ static int _const_erase( node_t* node, tree_t** tree ) {
             break;
         }
 
+    } else if ( IS_OP( (*tree), SUB ) && (*tree)->left && IS_NUM( (*tree)->left, 0 ) ) {
+
+        leave_free( node, (*tree)->left );
+        (*tree)->left = NULL;
+
     }
 
     if ( (*tree)->left ) {
@@ -627,7 +632,7 @@ int const_erase ( node_t* node ) {
 
 static int _tree_latex( const tree_t* tree, FILE* file ) {
 
-    int flag = 0;
+    int flag = 0, bracket = 0;
 
      if ( IS_OP( tree, DIV ) ) {
         fprintf( file, "\\frac{");
@@ -665,7 +670,7 @@ static int _tree_latex( const tree_t* tree, FILE* file ) {
             } else _tree_latex( tree->left, file);
         }
 
-        if ( (tree->data)->type == NUM ) fprintf( file, "%.2lf", (tree->data->data).num );
+        if ( (tree->data)->type == NUM ) fprintf( file, "%lg", (tree->data->data).num );
         else if ( (tree->data)->type == OP ) {
             //printf( "%c", (tree->data->data).op );
             switch ( (tree->data->data).op ) {
@@ -683,12 +688,15 @@ static int _tree_latex( const tree_t* tree, FILE* file ) {
                     break;
                 case LG: fprintf( file, "\\ln");
                     flag = 1;
+                    bracket = 1;
                     break;
                 case COS: fprintf( file, "\\cos");
                     flag = 1; 
+                    bracket = 1;
                     break;
                 case SIN: fprintf( file, "\\sin");
                     flag = 1;
+                    bracket = 1;
                     break;
                 default: return 0;
             }
@@ -702,11 +710,21 @@ static int _tree_latex( const tree_t* tree, FILE* file ) {
                 fprintf ( file, "{" );
             }
 
+            if ( bracket == 1 ) {
+
+                fprintf ( file, "(" );
+            }
+
             if ( (tree->data->type == OP && tree->right->data->type == OP && ( (tree->data->data.op / 10) > ( tree->right->data->data.op / 10))) && OP_DATA(tree) < DEG)  {
                 fprintf( file, "(" );
                 _tree_latex( tree->right, file );
                 fprintf( file, ")" );
             } else _tree_latex( tree->right, file );
+
+            if ( bracket == 1 ) {
+
+                fprintf ( file, ")" );
+            }
 
             if ( flag == 1 ) {
                 fprintf ( file, "}" );
@@ -720,7 +738,7 @@ static int _tree_latex( const tree_t* tree, FILE* file ) {
 
 static int r_tree_latex( const tree_t* tree, FILE* file ) {
 
-    int flag = 0;
+    int flag = 0, bracket = 0;
 
     tree_t* left = NULL, *right = NULL;
 
@@ -772,7 +790,7 @@ static int r_tree_latex( const tree_t* tree, FILE* file ) {
             } else r_tree_latex( left, file);
         }
 
-        if ( (tree->data)->type == NUM ) fprintf( file, "%.2lf", (tree->data->data).num );
+        if ( (tree->data)->type == NUM ) fprintf( file, "%lg", (tree->data->data).num );
         else if ( (tree->data)->type == OP ) {
             //printf( "%c", (tree->data->data).op );
             switch ( (tree->data->data).op ) {
@@ -790,12 +808,15 @@ static int r_tree_latex( const tree_t* tree, FILE* file ) {
                     break;
                 case LG: fprintf( file, "\\ln");
                     flag = 1;
+                    bracket = 1;
                     break;
                 case COS: fprintf( file, "\\cos");
                     flag = 1; 
+                    bracket = 1;
                     break;
                 case SIN: fprintf( file, "\\sin");
                     flag = 1;
+                    bracket = 1;
                     break;
                 default: return 0;
             }
@@ -809,11 +830,21 @@ static int r_tree_latex( const tree_t* tree, FILE* file ) {
                 fprintf ( file, "{" );
             }
 
+            if ( bracket == 1 ) {
+
+                fprintf ( file, "(" );
+            }
+
             if ( (tree->data->type == OP && right->data->type == OP && ( (tree->data->data.op / 10) > ( right->data->data.op / 10))) && OP_DATA(tree) < DEG)  {
                 fprintf( file, "(" );
                 r_tree_latex( right, file );
                 fprintf( file, ")" );
             } else r_tree_latex( right, file );
+
+            if ( bracket == 1 ) {
+
+                fprintf ( file, ")" );
+            }
 
             if ( flag == 1 ) {
                 fprintf ( file, "}" );
@@ -836,11 +867,11 @@ int tree_latex( const node_t* node, const node_t* src ) {
     
     if ( (pid = fork()) == 0 ){
         FILE* file = fopen( "topdf.tex", "w" );
-        fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n$ (" );
+        fprintf( file, "\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\begin{document}\n Here is the function\\\\ $ (" );
         r_tree_latex( src->node, file );
         fprintf( file, " )' = ");
         _tree_latex( node->node, file );
-        fprintf( file, "$\n\\end{document}");
+        fprintf( file, "$\n \\\\it was the differential \\end{document}");
         fclose( file );
         system( "pdflatex topdf.tex" );
         system( "rm *.tex" );
