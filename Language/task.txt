@@ -1,0 +1,21 @@
+Language update
+
+priority: 
+    +, -
+    /, *
+    ^
+    ln, cos, sin
+    :=
+
+    
+
+{
+    G ::= E \0 
+    E ::= T {[+-]T}*
+    T ::= D{[*/]D}*
+    D ::= F{[^]F}*
+    F ::= {["ln","cos","sin"]P}|P
+    P ::= '('E')'|N|V
+    N ::= [0 - 9]+
+    V ::= [x]  
+}

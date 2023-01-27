@@ -1,0 +1,4 @@
+PUSH 2.7
+LN
+OUT
+HLT
